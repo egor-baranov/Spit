@@ -20,10 +20,6 @@ public class CameraScript : MonoBehaviour {
     }
 
     public void Update() {
-        transform.position = Vector3.Lerp(
-            transform.position,
-            Player.Instance.transform.position + _distanceFromPlayer,
-            Time.deltaTime * movementSpeed
-        );
+        transform.LookAt(Player.Instance.transform);
     }
 }

@@ -1,19 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Player : MonoBehaviour {
     public static Player Instance { get; private set; }
 
-    [SerializeField] private float speed;
+    public GameObject Body => transform.GetChild(0).gameObject;
+
+    [SerializeField] private float movementSpeed;
+    [SerializeField] private float rotationSpeed;
 
     private void Update() {
         transform.Translate(
             MovementState.Create(
                 MovementState.PossibleKeyList.Where(Input.GetKey)
-            ).Direction * speed
+            ).Direction * movementSpeed
         );
+
+        if (Input.GetKey(KeyCode.Q) ^ Input.GetKey(KeyCode.E)) {
+            transform.Rotate(transform.up, (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed);
+        }
+
+        Body.transform.LookAt(CameraScript.Instance.transform);
     }
 
     private class MovementState {
