@@ -4,11 +4,15 @@ using System.Linq;
 using UnityEngine;
 
 public class Player : MonoBehaviour {
+    public static Player Instance { get; private set; }
+
+    [SerializeField] private float speed;
+
     private void Update() {
         transform.Translate(
             MovementState.Create(
                 MovementState.PossibleKeyList.Where(Input.GetKey)
-            ).Direction
+            ).Direction * speed
         );
     }
 
@@ -63,5 +67,13 @@ public class Player : MonoBehaviour {
             RightDown,
             None
         }
+    }
+
+    private void Awake() {
+        if (Instance != null) {
+            Destroy(gameObject);
+        }
+
+        Instance = this;
     }
 }
