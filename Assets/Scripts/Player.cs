@@ -17,23 +17,23 @@ public class Player : MonoBehaviour {
             new List<KeyCode> {KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D};
 
         public List<KeyCode> KeyCodeList => _keyCodeList;
-        public Vector2 Direction => _direction;
+        public Vector3 Direction => _direction;
 
         private readonly List<KeyCode> _keyCodeList;
-        private readonly Vector2 _direction;
+        private readonly Vector3 _direction;
 
-        private MovementState(List<KeyCode> keyCodeList, Vector2 direction) {
+        private MovementState(List<KeyCode> keyCodeList, Vector3 direction) {
             _keyCodeList = keyCodeList;
             _direction = direction;
         }
 
-        private static Vector2 GetDirectionFromKey(KeyCode keyCode) {
+        private static Vector3 GetDirectionFromKey(KeyCode keyCode) {
             // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
             switch (keyCode) {
-                case KeyCode.W: return Vector2.up;
-                case KeyCode.A: return Vector2.left;
-                case KeyCode.S: return Vector2.down;
-                case KeyCode.D: return Vector2.right;
+                case KeyCode.W: return Vector3.forward;
+                case KeyCode.A: return Vector3.left;
+                case KeyCode.S: return Vector3.back;
+                case KeyCode.D: return Vector3.right;
                 default: throw new InvalidDataException();
             }
         }
@@ -42,7 +42,7 @@ public class Player : MonoBehaviour {
 
         public static MovementState Create(IEnumerable<KeyCode> keyCodes) {
             var keyList = keyCodes.Where(it => PossibleKeyList.Contains(it)).ToList();
-            var result = Vector2.zero;
+            var result = Vector3.zero;
             keyList.ForEach(keyCode => result += GetDirectionFromKey(keyCode));
 
             if (result.sqrMagnitude > 1) {
