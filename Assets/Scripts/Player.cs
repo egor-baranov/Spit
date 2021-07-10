@@ -8,15 +8,17 @@ public class Player : MonoBehaviour {
     public static Player Instance { get; private set; }
 
     public GameObject Body => transform.GetChild(0).gameObject;
-
     public GameObject CameraHolder => transform.GetChild(1).gameObject;
-
+    public GameObject Shadow => transform.GetChild(2).gameObject;
 
     [SerializeField] private float movementSpeed;
     [SerializeField] private float rotationSpeed;
+    
+    [SerializeField] private LayerMask layerMask;
 
-    private float _targetCameraHolderAngleX = 50F, _targetCameraHolderAngleY = 0F;
+    private float _targetCameraHolderAngleX = 50F, _targetCameraHolderAngleY;
 
+    
     private void Update() {
         transform.Translate(
             MovementState.Create(
@@ -31,7 +33,6 @@ public class Player : MonoBehaviour {
 
         Body.transform.LookAt(CameraScript.Instance.transform);
 
-        
         CameraHolder.transform.rotation =
             Quaternion.RotateTowards(
                 CameraHolder.transform.rotation,
@@ -43,12 +44,20 @@ public class Player : MonoBehaviour {
                 50 * Time.deltaTime
             );
 
+        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask)) {
+            Shadow.transform.LookAt(raycastHit.point);
+            Shadow.transform.rotation = Quaternion.Euler(90F, Shadow.transform.rotation.eulerAngles.y, 0F);
+        }
+
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
             _targetCameraHolderAngleX = 89.9F;
+            Shadow.transform.localScale = Vector3.one * 3;
         }
 
         if (Input.GetKeyUp(KeyCode.Mouse0)) {
             _targetCameraHolderAngleX = 50F;
+            Shadow.transform.localScale = Vector3.zero;
         }
     }
 
