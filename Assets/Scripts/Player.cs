@@ -9,8 +9,13 @@ public class Player : MonoBehaviour {
 
     public GameObject Body => transform.GetChild(0).gameObject;
 
+    public GameObject CameraHolder => transform.GetChild(1).gameObject;
+
+
     [SerializeField] private float movementSpeed;
     [SerializeField] private float rotationSpeed;
+
+    private float _targetCameraHolderAngleX = 50F, _targetCameraHolderAngleY = 0F;
 
     private void Update() {
         transform.Translate(
@@ -21,9 +26,38 @@ public class Player : MonoBehaviour {
 
         if (Input.GetKey(KeyCode.Q) ^ Input.GetKey(KeyCode.E)) {
             transform.Rotate(transform.up, (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed);
+            _targetCameraHolderAngleY += (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed;
         }
 
         Body.transform.LookAt(CameraScript.Instance.transform);
+
+        
+        CameraHolder.transform.rotation =
+            Quaternion.RotateTowards(
+                CameraHolder.transform.rotation,
+                Quaternion.Euler(
+                    _targetCameraHolderAngleX,
+                    _targetCameraHolderAngleY,
+                    CameraHolder.transform.rotation.z
+                ),
+                50 * Time.deltaTime
+            );
+
+        if (Input.GetKeyDown(KeyCode.Mouse0)) {
+            _targetCameraHolderAngleX = 89.9F;
+        }
+
+        if (Input.GetKeyUp(KeyCode.Mouse0)) {
+            _targetCameraHolderAngleX = 50F;
+        }
+    }
+
+    private void Awake() {
+        if (Instance != null) {
+            Destroy(gameObject);
+        }
+
+        Instance = this;
     }
 
     private class MovementState {
@@ -77,13 +111,5 @@ public class Player : MonoBehaviour {
             RightDown,
             None
         }
-    }
-
-    private void Awake() {
-        if (Instance != null) {
-            Destroy(gameObject);
-        }
-
-        Instance = this;
     }
 }
