@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Billboard : MonoBehaviour {
     [SerializeField] private bool shouldRotate;

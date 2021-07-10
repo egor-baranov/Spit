@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Unity.Mathematics;
 using UnityEngine;
 
 public class Player : MonoBehaviour {
@@ -13,12 +12,38 @@ public class Player : MonoBehaviour {
 
     [SerializeField] private float movementSpeed;
     [SerializeField] private float rotationSpeed;
-    
+    [SerializeField] private float spitSpeed;
+
+    [SerializeField] private bool canShoot = true;
+
     [SerializeField] private LayerMask layerMask;
 
-    private float _targetCameraHolderAngleX = 50F, _targetCameraHolderAngleY;
+    [SerializeField] private GameObject spitPrefab;
 
-    
+    private float _targetCameraHolderAngleX = 75F, _targetCameraHolderAngleY;
+    private float _targetShadowScale;
+
+    public void MoveTo(Enemy enemy) {
+        var tmpPosition = transform.position;
+        transform.position = enemy.transform.position;
+        enemy.transform.position = tmpPosition;
+
+        var tmpSprite = Body.GetComponent<SpriteRenderer>().sprite;
+        Body.GetComponent<SpriteRenderer>().sprite = enemy.Body.GetComponent<SpriteRenderer>().sprite;
+        enemy.Body.GetComponent<SpriteRenderer>().sprite = tmpSprite;
+    }
+
+    public void Recharge() => canShoot = true;
+
+    private void Shoot() {
+        if (!canShoot) return;
+
+        canShoot = false;
+        Instantiate(spitPrefab, transform.position, Quaternion.identity).GetComponent<Rigidbody>().velocity =
+            (Shadow.transform.GetChild(0).transform.position - Shadow.transform.position).normalized * spitSpeed;
+    }
+
+
     private void Update() {
         transform.Translate(
             MovementState.Create(
@@ -41,8 +66,14 @@ public class Player : MonoBehaviour {
                     _targetCameraHolderAngleY,
                     CameraHolder.transform.rotation.z
                 ),
-                50 * Time.deltaTime
+                100 * Time.deltaTime
             );
+
+        Shadow.transform.localScale = Vector3.Lerp(
+            Shadow.transform.localScale,
+            Vector3.one * _targetShadowScale,
+            10 * Time.deltaTime
+        );
 
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask)) {
@@ -52,12 +83,14 @@ public class Player : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
             _targetCameraHolderAngleX = 89.9F;
-            Shadow.transform.localScale = Vector3.one * 3;
+            _targetShadowScale = 3;
         }
 
         if (Input.GetKeyUp(KeyCode.Mouse0)) {
-            _targetCameraHolderAngleX = 50F;
-            Shadow.transform.localScale = Vector3.zero;
+            _targetCameraHolderAngleX = 75F;
+            _targetShadowScale = 0;
+
+            Shoot();
         }
     }
 
