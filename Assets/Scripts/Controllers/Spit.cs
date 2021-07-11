@@ -1,4 +1,5 @@
 ﻿using System;
+using Controllers;
 using UnityEngine;
 
 public class Spit : MonoBehaviour {
@@ -7,12 +8,13 @@ public class Spit : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider other) {
-        if (other.transform.parent == null) {
-            Destroy(gameObject);
+        try {
+            if (other.transform.parent.GetComponent<Enemy>()) {
+                Player.Instance.MoveTo(other.transform.parent.GetComponent<Enemy>());
+                Destroy(gameObject);
+            }
         }
-
-        if (other.transform.parent.GetComponent<Enemy>()) {
-            Player.Instance.MoveTo(other.transform.parent.GetComponent<Enemy>());
+        catch (NullReferenceException) {
             Destroy(gameObject);
         }
     }
