@@ -1,5 +1,4 @@
-﻿using System;
-using Controllers;
+﻿using Controllers.Creatures;
 using UnityEngine;
 
 public class CameraScript : MonoBehaviour {
@@ -31,11 +30,11 @@ public class CameraScript : MonoBehaviour {
             30 * Time.deltaTime
         );
 
-        if (Input.GetKeyDown(KeyCode.Mouse0)) {
+        if (Input.GetKeyDown(KeyCode.Mouse1)) {
             _targetCameraZ = -200F;
         }
 
-        if (Input.GetKeyUp(KeyCode.Mouse0)) {
+        if (Input.GetKeyUp(KeyCode.Mouse1)) {
             _targetCameraZ = -100F;
         }
     }

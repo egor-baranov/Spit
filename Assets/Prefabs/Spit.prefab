@@ -97,8 +97,8 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 0, g: 0.37565756, b: 1, a: 1}
-  m_Intensity: 20
-  m_Range: 10.576039
+  m_Intensity: 30
+  m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -158,6 +158,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2fb35ebc50b40c1bb3eda7fda131e43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxTimeAlive: 5
+  movementSpeed: 240
 --- !u!54 &7417916123268976603
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -172,7 +174,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!136 &5290885042446064654
 CapsuleCollider:
@@ -182,7 +184,7 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8022523258734326967}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 5.12
   m_Height: 10.240003

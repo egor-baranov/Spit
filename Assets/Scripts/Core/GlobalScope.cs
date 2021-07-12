@@ -42,6 +42,10 @@ namespace Core {
                     }
                 }
             }
+
+            private void OnDestroy() {
+                GlobalScope._relatedMonoBehaviour = null;
+            }
         }
 
         private static RelatedMonoBehaviour _relatedMonoBehaviour;

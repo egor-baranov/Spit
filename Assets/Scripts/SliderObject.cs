@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Controllers;
+using Controllers.Creatures;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
