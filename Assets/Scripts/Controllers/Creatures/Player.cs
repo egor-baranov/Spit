@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Controllers.Projectiles;
 using Core;
 using UnityEngine;
-using Util.HelperMethods;
 
-namespace Controllers {
+namespace Controllers.Creatures {
     public class Player : Creature {
         public static Player Instance { get; private set; }
 
@@ -13,17 +13,22 @@ namespace Controllers {
         public GameObject Shadow => transform.GetChild(2).gameObject;
 
         [SerializeField] private float rotationSpeed;
-        [SerializeField] private float spitSpeed;
-
-        [SerializeField] private bool canShoot = true;
+        [SerializeField] private float rechargeTime;
+        [SerializeField] private float shotCost;
 
         [SerializeField] private LayerMask layerMask;
 
         [SerializeField] private GameObject spitPrefab;
+        [SerializeField] private GameObject bulletPrefab;
         [SerializeField] private float cameraAngle;
 
         private float _targetCameraHolderAngleX, _targetCameraHolderAngleY;
         private float _targetShadowScale;
+
+        private bool _canShoot = true;
+        private bool _canPerformSoulBlast = true;
+
+        private Vector3 _shootDirection;
 
         public void MoveTo(Enemy enemy) {
             var tmpPosition = transform.position;
@@ -37,21 +42,36 @@ namespace Controllers {
             var tmpHp = HealthPoints;
             HealthPoints = enemy.HealthPoints;
             enemy.HealthPoints = tmpHp;
-            
+
             var tmpMaxHp = MaxHp;
             MaxHp = enemy.MaxHp;
             enemy.MaxHp = tmpMaxHp;
         }
 
-
-        public void Recharge() => canShoot = true;
+        public void RechargeSoulBlast() => _canPerformSoulBlast = true;
+        public void Recharge() => _canShoot = true;
 
         private void Shoot() {
-            if (!canShoot) return;
+            if (!_canShoot) return;
 
-            canShoot = false;
+            _canShoot = false;
+            Instantiate(bulletPrefab, transform.position, Quaternion.identity).GetComponent<Rigidbody>().velocity =
+                _shootDirection.normalized * bulletPrefab.GetComponent<Projectile>().MovementSpeed;
+
+            ReceiveDamage(shotCost);
+
+            GlobalScope.ExecuteWithDelay(
+                rechargeTime,
+                Recharge
+            );
+        }
+
+        private void SoulBlast() {
+            if (!_canPerformSoulBlast) return;
+
+            _canPerformSoulBlast = false;
             Instantiate(spitPrefab, transform.position, Quaternion.identity).GetComponent<Rigidbody>().velocity =
-                (Shadow.transform.GetChild(0).transform.position - Shadow.transform.position).normalized * spitSpeed;
+                _shootDirection.normalized * spitPrefab.GetComponent<Projectile>().MovementSpeed;
         }
 
         protected override void Awake() {
@@ -65,9 +85,7 @@ namespace Controllers {
 
             GlobalScope.ExecuteEveryInterval(
                 1F,
-                () => {
-                    ReceiveDamage(0.5F);
-                },
+                () => { ReceiveDamage(0.5F); },
                 () => !IsAlive
             );
         }
@@ -109,18 +127,24 @@ namespace Controllers {
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask)) {
                 Shadow.transform.LookAt(raycastHit.point);
                 Shadow.transform.rotation = Quaternion.Euler(90F, Shadow.transform.rotation.eulerAngles.y, 0F);
+                _shootDirection = raycastHit.point - transform.position;
+                _shootDirection = new Vector3(_shootDirection.x, 0F, _shootDirection.z).normalized;
             }
 
             if (Input.GetKeyDown(KeyCode.Mouse0)) {
+                Shoot();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Mouse1)) {
                 _targetCameraHolderAngleX = 89.9F;
                 _targetShadowScale = 3;
             }
 
-            if (Input.GetKeyUp(KeyCode.Mouse0)) {
+            if (Input.GetKeyUp(KeyCode.Mouse1)) {
                 _targetCameraHolderAngleX = cameraAngle;
                 _targetShadowScale = 0;
 
-                Shoot();
+                SoulBlast();
             }
         }
 

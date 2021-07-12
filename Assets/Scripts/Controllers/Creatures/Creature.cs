@@ -1,8 +1,7 @@
 ﻿using Core;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace Controllers {
+namespace Controllers.Creatures {
     public class Creature : MonoBehaviour {
         public float HealthPoints {
             get => _healthPoints;
@@ -38,7 +37,12 @@ namespace Controllers {
         protected virtual void Update() { }
 
         protected virtual void OnDeath() {
-            GameManager.Instance.OnDeath();
+            if (Player.Instance == this) {
+                GameManager.Instance.OnDeath();
+            }
+            else {
+                Destroy(gameObject);
+            }
         }
     }
 }
