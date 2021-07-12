@@ -1,5 +1,6 @@
 ﻿using Core.Managers;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Core {
     public class GameManager : MonoBehaviour {
@@ -9,6 +10,7 @@ namespace Core {
         [SerializeField] private int enemyCount;
 
         public void OnDeath() => UiManager.Instance.OnDeath();
+        public void OnRestart() => SceneManager.LoadScene("Prototype");
 
         private void Awake() {
             if (Instance != null) {
