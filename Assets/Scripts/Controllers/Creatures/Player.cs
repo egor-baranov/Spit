@@ -90,7 +90,13 @@ namespace Controllers.Creatures {
             );
         }
 
+        protected override void Start() {
+            base.Start();
+            Body.transform.LookAt(CameraScript.Instance.transform);
+        }
+
         protected override void Update() {
+            base.Update();
             if (!IsAlive) return;
 
             transform.Translate(
@@ -103,9 +109,7 @@ namespace Controllers.Creatures {
                 transform.Rotate(transform.up, (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed);
                 _targetCameraHolderAngleY += (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed;
             }
-
-            Body.transform.LookAt(CameraScript.Instance.transform);
-
+            
             CameraHolder.transform.rotation =
                 Quaternion.RotateTowards(
                     CameraHolder.transform.rotation,
@@ -131,7 +135,7 @@ namespace Controllers.Creatures {
                 _shootDirection = new Vector3(_shootDirection.x, 0F, _shootDirection.z).normalized;
             }
 
-            if (Input.GetKeyDown(KeyCode.Mouse0)) {
+            if (Input.GetKey(KeyCode.Mouse0)) {
                 Shoot();
             }
 
