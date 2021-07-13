@@ -1,10 +1,11 @@
-﻿using Controllers.Creatures;
+﻿using Pathfinding;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Controllers {
+namespace Controllers.Creatures {
     public class Enemy : Creature {
         [SerializeField] private float changeTarget;
+        [SerializeField] private float maxDistanceFromPlayer;
 
         private Vector3 _targetPosition;
 
@@ -15,18 +16,19 @@ namespace Controllers {
         protected override void Awake() {
             base.Awake();
         }
-        
+
         protected override void Start() {
+            GetComponent<AIDestinationSetter>().target = Player.Instance.transform;
             transform.position = GenerateNextPoint();
             _targetPosition = GenerateNextPoint();
         }
 
         protected override void Update() {
-            if (Vector3.Distance(transform.position, _targetPosition) < changeTarget) {
-                _targetPosition = GenerateNextPoint();
-            }
-
-            GetComponent<Rigidbody>().velocity = (_targetPosition - transform.position).normalized * movementSpeed;
+             base.Update();
+            GetComponent<AIDestinationSetter>().enabled = Vector3.Distance(
+                transform.position,
+                Player.Instance.transform.position
+            ) <= maxDistanceFromPlayer;
         }
     }
 }
