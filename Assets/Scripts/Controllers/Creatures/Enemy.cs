@@ -1,4 +1,5 @@
-﻿using Pathfinding;
+﻿using Core;
+using Pathfinding;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -24,11 +25,16 @@ namespace Controllers.Creatures {
         }
 
         protected override void Update() {
-             base.Update();
+            base.Update();
             GetComponent<AIDestinationSetter>().enabled = Vector3.Distance(
                 transform.position,
                 Player.Instance.transform.position
             ) <= maxDistanceFromPlayer;
+        }
+
+        protected override void OnDeath() {
+            base.OnDeath();
+            GameManager.Instance.SpawnEnemies(2);
         }
     }
 }
