@@ -22,6 +22,8 @@ namespace Controllers.Creatures {
             GetComponent<AIDestinationSetter>().target = Player.Instance.transform;
             transform.position = GenerateNextPoint();
             _targetPosition = GenerateNextPoint();
+
+            GameManager.Instance.RegisterEnemy(this);
         }
 
         protected override void Update() {
@@ -34,6 +36,7 @@ namespace Controllers.Creatures {
 
         protected override void OnDeath() {
             base.OnDeath();
+            GameManager.Instance.RemoveEnemy(this);
             GameManager.Instance.SpawnEnemies(2);
         }
     }

@@ -38,7 +38,7 @@ namespace Controllers.Creatures {
 
         protected virtual void OnDeath() {
             if (Player.Instance == this) {
-                GameManager.Instance.OnDeath();
+                GameManager.OnDeath();
             }
             else {
                 Destroy(gameObject);
