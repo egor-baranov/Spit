@@ -7,7 +7,7 @@ namespace Core.Managers {
         [SerializeField] private GameObject deathPanel;
 
         public void OnDeath() => deathPanel.SetActive(true);
-        public void OnRestart() => GameManager.Instance.OnRestart();
+        public void OnRestart() => GameManager.OnRestart();
 
         private void Awake() {
             if (Instance != null) {

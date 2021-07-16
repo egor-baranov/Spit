@@ -160,6 +160,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxTimeAlive: 5
   movementSpeed: 240
+  slowTimeDistance: 50
+  slowTimeScale: 0.3
+  slowmoTimeout: 0.5
 --- !u!54 &7417916123268976603
 Rigidbody:
   m_ObjectHideFlags: 0
