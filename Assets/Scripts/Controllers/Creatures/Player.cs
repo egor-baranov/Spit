@@ -55,7 +55,9 @@ namespace Controllers.Creatures {
             if (!_canShoot) return;
 
             _canShoot = false;
-            Instantiate(bulletPrefab, transform.position, Quaternion.identity).GetComponent<Rigidbody>().velocity =
+            Instantiate(bulletPrefab, transform.position + _shootDirection.normalized,
+                        Quaternion.identity)
+                    .GetComponent<Rigidbody>().velocity =
                 _shootDirection.normalized * bulletPrefab.GetComponent<Projectile>().MovementSpeed;
 
             ReceiveDamage(shotCost);
@@ -70,7 +72,9 @@ namespace Controllers.Creatures {
             if (!_canPerformSoulBlast) return;
 
             _canPerformSoulBlast = false;
-            Instantiate(spitPrefab, transform.position, Quaternion.identity).GetComponent<Rigidbody>().velocity =
+            Instantiate(spitPrefab, transform.position + _shootDirection.normalized,
+                        Quaternion.identity)
+                    .GetComponent<Rigidbody>().velocity =
                 _shootDirection.normalized * spitPrefab.GetComponent<Projectile>().MovementSpeed;
         }
 
@@ -102,14 +106,14 @@ namespace Controllers.Creatures {
             transform.Translate(
                 MovementState.Create(
                     MovementState.PossibleKeyList.Where(Input.GetKey)
-                ).Direction * movementSpeed
+                ).Direction * (movementSpeed * Time.timeScale)
             );
 
             if (Input.GetKey(KeyCode.Q) ^ Input.GetKey(KeyCode.E)) {
                 transform.Rotate(transform.up, (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed);
                 _targetCameraHolderAngleY += (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed;
             }
-            
+
             CameraHolder.transform.rotation =
                 Quaternion.RotateTowards(
                     CameraHolder.transform.rotation,
