@@ -503,8 +503,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 227739084}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.3, y: 0, z: 0}
-  m_LocalScale: {x: 200, y: 1, z: 1000}
+  m_LocalPosition: {x: -7.3, y: 0, z: -5}
+  m_LocalScale: {x: 459.94577, y: 1, z: 1154.7408}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -812,9 +812,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89c36bfc2b124700a52bc36c0026ec7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 5
-  cameraDistance: -100
-  zoomOutScale: 2
+  movementSpeed: 2
+  cameraDistance: -150
+  zoomOutScale: 1.3
   cameraRangeX:
     min: -100
     max: 100
@@ -1115,7 +1115,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyPrefab: {fileID: 7618548787555989890, guid: 12c97d9f878dbbb47b981492424e12ea,
     type: 3}
-  enemyCount: 2
 --- !u!4 &914491671
 Transform:
   m_ObjectHideFlags: 0
@@ -1904,6 +1903,7 @@ GameObject:
   - component: {fileID: 1610636064}
   - component: {fileID: 1610636063}
   - component: {fileID: 1610636065}
+  - component: {fileID: 1610636066}
   m_Layer: 0
   m_Name: Body
   m_TagString: Player
@@ -2003,6 +2003,19 @@ CapsuleCollider:
   m_Height: 16.000002
   m_Direction: 1
   m_Center: {x: 0.022903442, y: 0, z: 0}
+--- !u!65 &1610636066
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1610636061}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 12.026751, y: 13.411631, z: 1}
+  m_Center: {x: 0.000002861023, y: -0.014670372, z: 0}
 --- !u!1 &1649009559
 GameObject:
   m_ObjectHideFlags: 0
@@ -2263,6 +2276,7 @@ GameObject:
   - component: {fileID: 1829646481}
   - component: {fileID: 1829646480}
   - component: {fileID: 1829646482}
+  - component: {fileID: 1829646484}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -2285,7 +2299,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 116
-  m_CollisionDetection: 2
+  m_CollisionDetection: 3
 --- !u!114 &1829646481
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2298,8 +2312,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d03529f8852426fba35d4daca4b8cde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHp: 100
-  movementSpeed: 1
+  maxHp: 25
+  movementSpeed: 200
   rotationSpeed: 1
   rechargeTime: 0.3
   shotCost: 1
@@ -2342,6 +2356,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1829646484
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1829646479}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 12.026751, y: 13.411631, z: 1}
+  m_Center: {x: 0.000002861023, y: -0.014670372, z: 0}
 --- !u!1 &1906106511
 GameObject:
   m_ObjectHideFlags: 0
