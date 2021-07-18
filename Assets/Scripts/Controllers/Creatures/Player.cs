@@ -10,7 +10,7 @@ namespace Controllers.Creatures {
         public static Player Instance { get; private set; }
 
         public GameObject CameraHolder => transform.GetChild(1).gameObject;
-        public GameObject Shadow => transform.GetChild(2).gameObject;
+        private GameObject Shadow => transform.GetChild(2).gameObject;
 
         [SerializeField] private float rotationSpeed;
         [SerializeField] private float rechargeTime;
@@ -30,26 +30,8 @@ namespace Controllers.Creatures {
 
         private Vector3 _shootDirection;
 
-        public void MoveTo(Enemy enemy) {
-            var tmpPosition = transform.position;
-            transform.position = enemy.transform.position;
-            enemy.transform.position = tmpPosition;
-
-            var tmpSprite = Body.GetComponent<SpriteRenderer>().sprite;
-            Body.GetComponent<SpriteRenderer>().sprite = enemy.Body.GetComponent<SpriteRenderer>().sprite;
-            enemy.Body.GetComponent<SpriteRenderer>().sprite = tmpSprite;
-
-            var tmpHp = HealthPoints;
-            HealthPoints = enemy.HealthPoints;
-            enemy.HealthPoints = tmpHp;
-
-            var tmpMaxHp = MaxHp;
-            MaxHp = enemy.MaxHp;
-            enemy.MaxHp = tmpMaxHp;
-        }
-
         public void RechargeSoulBlast() => _canPerformSoulBlast = true;
-        public void Recharge() => _canShoot = true;
+        private void Recharge() => _canShoot = true;
 
         private void Shoot() {
             if (!_canShoot) return;
@@ -130,7 +112,7 @@ namespace Controllers.Creatures {
                 10 * Time.deltaTime
             );
 
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var ray = CameraScript.Instance.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask)) {
                 Shadow.transform.LookAt(raycastHit.point);
                 Shadow.transform.rotation = Quaternion.Euler(90F, Shadow.transform.rotation.eulerAngles.y, 0F);
@@ -171,7 +153,6 @@ namespace Controllers.Creatures {
             }
 
             private static Vector3 GetDirectionFromKey(KeyCode keyCode) {
-                // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
                 switch (keyCode) {
                     case KeyCode.W: return Vector3.forward;
                     case KeyCode.A: return Vector3.left;
@@ -193,18 +174,6 @@ namespace Controllers.Creatures {
                 }
 
                 return new MovementState(keyList, result);
-            }
-
-            public enum MovementDirection {
-                Up,
-                Down,
-                Left,
-                Right,
-                LeftUp,
-                LeftDown,
-                RightUp,
-                RightDown,
-                None
             }
         }
     }
