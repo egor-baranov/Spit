@@ -103,11 +103,10 @@ namespace Controllers.Creatures {
             base.Update();
             if (!IsAlive) return;
 
-            transform.Translate(
+            GetComponent<Rigidbody>().velocity =
                 MovementState.Create(
                     MovementState.PossibleKeyList.Where(Input.GetKey)
-                ).Direction * (movementSpeed * Time.timeScale)
-            );
+                ).Direction * movementSpeed;
 
             if (Input.GetKey(KeyCode.Q) ^ Input.GetKey(KeyCode.E)) {
                 transform.Rotate(transform.up, (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed);
