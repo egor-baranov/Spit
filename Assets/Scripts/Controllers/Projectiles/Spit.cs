@@ -24,22 +24,22 @@ namespace Controllers.Projectiles {
             GetComponent<Light>().intensity = 30 * _timeAliveLeft / maxTimeAlive;
             GetComponent<Light>().range = 30 * _timeAliveLeft / maxTimeAlive;
 
-            Time.timeScale = GameManager.Instance.EnemyList.Any(
-                it =>
-                    Vector3.Distance(
-                        transform.position,
-                        it.transform.position
-                    ) <= slowTimeDistance
-            )
-                ? slowTimeScale
-                : 1F;
-            Debug.Log(GameManager.Instance.EnemyList.Min(
-                it =>
-                    Vector3.Distance(
-                        transform.position,
-                        it.transform.position
-                    )
-            ));
+            // Time.timeScale = GameManager.Instance.EnemyList.Any(
+            //     it =>
+            //         Vector3.Distance(
+            //             transform.position,
+            //             it.transform.position
+            //         ) <= slowTimeDistance
+            // )
+            //     ? slowTimeScale
+            //     : 1F;
+            // Debug.Log(GameManager.Instance.EnemyList.Min(
+            //     it =>
+            //         Vector3.Distance(
+            //             transform.position,
+            //             it.transform.position
+            //         )
+            // ));
         }
 
         private void OnTriggerEnter(Collider other) {
@@ -62,7 +62,6 @@ namespace Controllers.Projectiles {
         protected override void OnDestroy() {
             base.OnDestroy();
             Player.Instance.RechargeSoulBlast();
-            Time.timeScale = 1F;
         }
     }
 }
