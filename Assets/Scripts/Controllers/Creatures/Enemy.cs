@@ -14,10 +14,6 @@ namespace Controllers.Creatures {
             return new Vector3(Random.Range(-94, 94), 6, Random.Range(-142, 150));
         }
 
-        protected override void Awake() {
-            base.Awake();
-        }
-
         protected override void Start() {
             GetComponent<AIDestinationSetter>().target = Player.Instance.transform;
             transform.position = GenerateNextPoint();
@@ -38,6 +34,10 @@ namespace Controllers.Creatures {
             base.OnDeath();
             GameManager.Instance.RemoveEnemy(this);
             GameManager.Instance.SpawnEnemies(2);
+        }
+
+        protected override void OnSwap() {
+            base.OnSwap();
         }
     }
 }
