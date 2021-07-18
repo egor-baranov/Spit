@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Controllers.Creatures;
 using Core;
 using UnityEngine;
@@ -23,32 +22,15 @@ namespace Controllers.Projectiles {
             _timeAliveLeft -= Time.deltaTime;
             GetComponent<Light>().intensity = 30 * _timeAliveLeft / maxTimeAlive;
             GetComponent<Light>().range = 30 * _timeAliveLeft / maxTimeAlive;
-
-            // Time.timeScale = GameManager.Instance.EnemyList.Any(
-            //     it =>
-            //         Vector3.Distance(
-            //             transform.position,
-            //             it.transform.position
-            //         ) <= slowTimeDistance
-            // )
-            //     ? slowTimeScale
-            //     : 1F;
-            // Debug.Log(GameManager.Instance.EnemyList.Min(
-            //     it =>
-            //         Vector3.Distance(
-            //             transform.position,
-            //             it.transform.position
-            //         )
-            // ));
         }
 
-        private void OnTriggerEnter(Collider other) {
+        private void OnCollisionEnter(Collision other) {
             try {
-                if (!other.transform.parent.GetComponent<Enemy>()) {
+                if (!other.collider.GetComponent<Enemy>()) {
                     return;
                 }
 
-                Player.Instance.MoveTo(other.transform.parent.GetComponent<Enemy>());
+                Player.Instance.SwapWith(other.collider.GetComponent<Enemy>());
                 GlobalScope.ExecuteWithDelay(
                     slowmoTimeout,
                     () => Time.timeScale = 1F,
