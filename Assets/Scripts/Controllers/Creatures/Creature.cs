@@ -66,7 +66,6 @@ namespace Controllers.Creatures {
 
         protected virtual void OnSwap() { }
 
-
         protected class BodyIntent {
             public float HealthPoints { get; }
             public float MaxHealthPoints { get; }
