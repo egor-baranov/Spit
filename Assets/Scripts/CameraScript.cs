@@ -12,14 +12,29 @@ public class CameraScript : MonoBehaviour {
     [SerializeField] private float zoomOutScale;
 
     [SerializeField] private MinMaxFloat cameraRangeX, cameraRangeZ;
-    
+
+    private Transform _target;
+
+    public void SetTarget(Transform targetTransform) {
+        _target = targetTransform;
+
+        if (_target == CameraHolder) {
+            _distanceFromTarget /= Mathf.Pow(zoomOutScale, 3);
+        }
+        else {
+            _distanceFromTarget *= Mathf.Pow(zoomOutScale, 3);
+        }
+    }
+
     public void LateUpdate() {
-        if (!Input.GetKey(KeyCode.Q) && !Input.GetKey(KeyCode.E)) {
-            transform.position = Vector3.Lerp(
-                transform.position,
-                Fit(CameraHolder.position - _distanceFromTarget),
-                Time.deltaTime * movementSpeed
-            );
+        if (!Input.GetKey(KeyCode.Q) && !Input.GetKey(KeyCode.E) || _target != CameraHolder) {
+            if (_target != null) {
+                transform.position = Vector3.Lerp(
+                    transform.position,
+                    Fit(_target.position - _distanceFromTarget),
+                    Time.deltaTime * movementSpeed
+                );
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.Mouse1)) {
@@ -30,20 +45,20 @@ public class CameraScript : MonoBehaviour {
             _distanceFromTarget /= zoomOutScale;
         }
 
-        if (Input.GetKeyUp(KeyCode.Q) || Input.GetKeyUp(KeyCode.E)) {
+        if ((Input.GetKeyUp(KeyCode.Q) || Input.GetKeyUp(KeyCode.E)) && _target == CameraHolder) {
             _distanceFromTarget = (transform.position - CameraHolder.position).normalized *
                                   (cameraDistance * (Input.GetKey(KeyCode.Mouse1) ? zoomOutScale : 1));
             transform.parent = null;
         }
 
-        if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E)) {
+        if ((Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E)) && _target == CameraHolder) {
             transform.parent = CameraHolder;
         }
     }
 
     private Vector3 Fit(Vector3 position) =>
         new Vector3(cameraRangeX.Fit(position.x), position.y, cameraRangeZ.Fit(position.z));
-    
+
     private void Awake() {
         if (Instance != null) {
             Destroy(gameObject);
@@ -53,7 +68,9 @@ public class CameraScript : MonoBehaviour {
     }
 
     private void Start() {
-        _distanceFromTarget = (transform.position - CameraHolder.position).normalized * cameraDistance;
+        _distanceFromTarget = (transform.position - CameraHolder.position).normalized *
+                              (cameraDistance * Mathf.Pow(zoomOutScale, 3));
         transform.LookAt(CameraHolder);
+        SetTarget(CameraHolder);
     }
 }
