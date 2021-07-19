@@ -11,6 +11,7 @@ namespace Controllers.Projectiles {
 
         private float _timeAliveLeft;
         private bool _killPlayer = true;
+        public bool _wasEnemyDestroyed = false;
 
         protected override void Awake() {
             base.Awake();
@@ -29,11 +30,13 @@ namespace Controllers.Projectiles {
 
         private void OnCollisionEnter(Collision other) {
             try {
-                if (!other.collider.GetComponent<Enemy>() || _timeAliveLeft > maxTimeAlive - 0.02F) {
+                if (!other.collider.GetComponent<Enemy>() || _timeAliveLeft > maxTimeAlive - 0.02F ||
+                    _wasEnemyDestroyed) {
                     return;
                 }
 
                 _killPlayer = false;
+                _wasEnemyDestroyed = true;
                 GameManager.soulShotCount += 1;
                 Player.Instance.SwapWith(other.collider.GetComponent<Enemy>());
                 GlobalScope.ExecuteWithDelay(
