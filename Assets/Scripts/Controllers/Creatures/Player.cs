@@ -11,10 +11,9 @@ namespace Controllers.Creatures {
 
         public bool IsFreezed { get; private set; }
 
-        [SerializeField] public bool isFreezed;
-
         public GameObject CameraHolder => transform.GetChild(1).gameObject;
         private GameObject Shadow => transform.GetChild(2).gameObject;
+        private GameObject Highlight => transform.Find("Highlight").gameObject;
 
         [SerializeField] private float rotationSpeed;
         [SerializeField] private float rechargeTime;
@@ -39,34 +38,34 @@ namespace Controllers.Creatures {
 
         private void Freeze() {
             IsFreezed = true;
-            isFreezed = true;
             Body.SetActive(false);
             GetComponent<CapsuleCollider>().enabled = false;
+            Highlight.SetActive(false);
         }
 
         public void UnFreeze() {
             IsFreezed = false;
-            isFreezed = false;
             GetComponent<CapsuleCollider>().enabled = true;
             Body.SetActive(true);
+            Highlight.SetActive(true);
         }
 
         private void Shoot() {
             if (!_canShoot) return;
 
             _canShoot = false;
-            var bullet = Instantiate(bulletPrefab, transform.position + _shootDirection.normalized * 2,
+            var bullet = Instantiate(bulletPrefab, transform.position + _shootDirection.normalized * 15,
                 Quaternion.identity).GetComponent<Bullet>();
             bullet.gameObject.GetComponent<Rigidbody>().velocity =
                 _shootDirection.normalized * bulletPrefab.GetComponent<Projectile>().MovementSpeed;
-            
+
             bullet.SetTarget(Bullet.BulletTarget.Enemy);
             bullet.SetColor(Color.red);
-            
+
             ReceiveDamage(shotCost);
 
             GlobalScope.ExecuteWithDelay(
-                rechargeTime,
+                rechargeTime * Random.Range(0.8F, 1.2F),
                 Recharge
             );
         }
