@@ -21,7 +21,12 @@ namespace Core {
                 UnityAction preAction = null) {
                 preAction?.Invoke();
                 yield return new WaitForSeconds(time);
-                action.Invoke();
+                try {
+                    action.Invoke();
+                }
+                catch (Exception exception) {
+                    // ignored
+                }
             }
 
             private static IEnumerator DoEveryIntervalCoroutine(float timeInterval, UnityAction action,
@@ -52,11 +57,16 @@ namespace Core {
 
         public static void ExecuteWithDelay(float delay, UnityAction action, UnityAction preAction = null) {
             Init();
-            _relatedMonoBehaviour.DoWithDelay(delay, action, preAction);
+            try {
+                _relatedMonoBehaviour.DoWithDelay(delay, action, preAction);
+            }
+            catch (MissingReferenceException exception) {
+                // ignored
+            }
         }
 
         public static void ExecuteEveryInterval(
-            float timeInterval, 
+            float timeInterval,
             UnityAction action,
             Func<bool> stopCondition = null) {
             Init();
