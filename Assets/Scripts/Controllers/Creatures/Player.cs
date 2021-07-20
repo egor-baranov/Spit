@@ -143,11 +143,15 @@ namespace Controllers.Creatures {
         }
 
         private void PerformControls() {
-            GetComponent<Rigidbody>().velocity =
+            var velocity =
                 MovementState.Create(
                     transform,
                     MovementState.PossibleKeyList.Where(Input.GetKey)
                 ).Direction * movementSpeed;
+
+            if (velocity != Vector3.zero) {
+                GetComponent<Rigidbody>().velocity = velocity;
+            }
 
             if (Input.GetKey(KeyCode.Q) ^ Input.GetKey(KeyCode.E)) {
                 transform.Rotate(transform.up, (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed);

@@ -18,7 +18,7 @@ namespace Controllers.Projectiles {
             _timeAliveLeft = maxTimeAlive;
             Destroy(gameObject, maxTimeAlive);
 
-            CameraScript.Instance.SetTarget(transform);
+            CameraScript.Instance.SetTarget(transform, 8);
             GameManager.Instance.SetTargetForAllEnemies(transform);
         }
 
@@ -39,7 +39,11 @@ namespace Controllers.Projectiles {
                 _killPlayer = false;
                 _wasEnemyDestroyed = true;
                 GameManager.soulShotCount += 1;
+
                 Player.Instance.SwapWith(other.collider.GetComponent<Enemy>());
+                Player.Instance.GetComponent<Rigidbody>()
+                    .AddForce(GetComponent<Rigidbody>().velocity * 4, ForceMode.Impulse);
+
                 GlobalScope.ExecuteWithDelay(
                     slowmoTimeout,
                     () => Time.timeScale = 1F,
@@ -61,7 +65,7 @@ namespace Controllers.Projectiles {
             }
 
             Player.Instance.RechargeSoulBlast();
-            CameraScript.Instance.SetTarget(Player.Instance.CameraHolder.transform);
+            CameraScript.Instance.SetTarget(Player.Instance.CameraHolder.transform, 2);
             GameManager.Instance.SetTargetForAllEnemies(Player.Instance.transform);
             Player.Instance.UnFreeze();
         }
