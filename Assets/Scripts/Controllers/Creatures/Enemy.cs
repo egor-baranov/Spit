@@ -91,8 +91,7 @@ namespace Controllers.Creatures {
             }
 
 
-            if (hit.transform.GetComponent<Player>() && 
-                Vector3.Distance(
+            if (Vector3.Distance(
                 transform.position,
                 _target.position
             ) <= maxShootDistance) {
