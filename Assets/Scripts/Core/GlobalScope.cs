@@ -33,7 +33,13 @@ namespace Core {
                 Func<bool> stopCondition) {
                 while (!stopCondition()) {
                     yield return new WaitForSecondsRealtime(timeInterval);
-                    action.Invoke();
+
+                    try {
+                        action.Invoke();
+                    }
+                    catch (Exception) {
+                        yield break;
+                    }
                 }
             }
 
