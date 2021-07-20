@@ -15,8 +15,14 @@ namespace Controllers.Creatures {
 
         private bool _canShoot = false;
         private Vector3 _shootDirection;
+        private Transform _target;
 
         private Vector3 ShootPosition => transform.position + _shootDirection.normalized * 15;
+
+        public void SetTarget(Transform target) {
+            _target = target;
+            GetComponent<AIDestinationSetter>().target = target;
+        }
 
         private void Recharge() => _canShoot = true;
 
@@ -43,37 +49,55 @@ namespace Controllers.Creatures {
         private void UnFreeze() => GetComponent<AIPath>().enabled = true;
 
         protected override void Start() {
-            GetComponent<AIDestinationSetter>().target = Player.Instance.transform;
+            SetTarget(Player.Instance.transform);
 
             GameManager.Instance.RegisterEnemy(this);
             GlobalScope.ExecuteWithDelay(
                 rechargeTime * Random.Range(0.7F, 1.3F),
                 Recharge
             );
+
+            var prevGuo = new GraphUpdateObject(GetComponent<Collider>().bounds) {updatePhysics = true};
+            GlobalScope.ExecuteEveryInterval(
+                0.1F, () => {
+                    var guo = new GraphUpdateObject(GetComponent<Collider>().bounds) {updatePhysics = true};
+
+                    AstarPath.active.UpdateGraphs(guo);
+                    AstarPath.active.UpdateGraphs(prevGuo);
+
+                    prevGuo = guo;
+                }, () => false);
         }
 
         protected override void Update() {
             base.Update();
 
+            if (_target == null) {
+                _target = Player.Instance.transform;
+            }
+
             if (Vector3.Distance(
                 transform.position,
-                Player.Instance.transform.position
-            ) > maxDistanceFromPlayer || Player.Instance.IsFreezed) {
+                _target.position
+            ) > maxDistanceFromPlayer) {
                 Freeze();
                 return;
             }
 
 
-            if (!Physics.SphereCast(ShootPosition, 30, Player.Instance.transform.position, out var hit)) {
+            if (!Physics.SphereCast(ShootPosition, 10, _target.position, out var hit)) {
+                UnFreeze();
                 return;
             }
 
-            if (hit.transform.GetComponent<Player>() && Vector3.Distance(
+
+            if (hit.transform.GetComponent<Player>() && 
+                Vector3.Distance(
                 transform.position,
-                Player.Instance.transform.position
+                _target.position
             ) <= maxShootDistance) {
                 // we cah shoot
-                _shootDirection = Player.Instance.transform.position - transform.position;
+                _shootDirection = _target.position - transform.position;
                 _shootDirection = new Vector3(_shootDirection.x, 0, _shootDirection.z);
                 Shoot();
                 Freeze();

@@ -19,6 +19,7 @@ namespace Controllers.Projectiles {
             Destroy(gameObject, maxTimeAlive);
 
             CameraScript.Instance.SetTarget(transform);
+            GameManager.Instance.SetTargetForAllEnemies(transform);
         }
 
         protected override void Update() {
@@ -61,6 +62,7 @@ namespace Controllers.Projectiles {
 
             Player.Instance.RechargeSoulBlast();
             CameraScript.Instance.SetTarget(Player.Instance.CameraHolder.transform);
+            GameManager.Instance.SetTargetForAllEnemies(Player.Instance.transform);
             Player.Instance.UnFreeze();
         }
     }

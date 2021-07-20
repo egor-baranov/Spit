@@ -54,13 +54,17 @@ namespace Controllers.Creatures {
             if (!_canShoot) return;
 
             _canShoot = false;
-            var bullet = Instantiate(bulletPrefab, transform.position + _shootDirection.normalized * 15,
-                Quaternion.identity).GetComponent<Bullet>();
+            var bullet = Instantiate(
+                    bulletPrefab,
+                    transform.position + _shootDirection.normalized * 15,
+                    Quaternion.identity
+                )
+                .GetComponent<Bullet>()
+                .SetTarget(Bullet.BulletTarget.Enemy)
+                .SetColor(Color.red);
+
             bullet.gameObject.GetComponent<Rigidbody>().velocity =
                 _shootDirection.normalized * bulletPrefab.GetComponent<Projectile>().MovementSpeed;
-
-            bullet.SetTarget(Bullet.BulletTarget.Enemy);
-            bullet.SetColor(Color.red);
 
             ReceiveDamage(shotCost);
 
