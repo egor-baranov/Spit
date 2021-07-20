@@ -24,12 +24,14 @@ namespace Controllers.Creatures {
             if (!_canShoot) return;
 
             _canShoot = false;
-            var bullet = Instantiate(bulletPrefab, ShootPosition, Quaternion.identity).GetComponent<Bullet>();
+            var bullet = Instantiate(bulletPrefab, ShootPosition, Quaternion.identity)
+                .GetComponent<Bullet>()
+                .SetTarget(Bullet.BulletTarget.Everything)
+                .SetColor(Color.green)
+                .SetModifiers(enemyModifier: 0.5F);
+
             bullet.gameObject.GetComponent<Rigidbody>().velocity =
                 _shootDirection.normalized * bulletPrefab.GetComponent<Projectile>().MovementSpeed;
-
-            bullet.SetTarget(Bullet.BulletTarget.Player);
-            bullet.SetColor(Color.green);
 
             GlobalScope.ExecuteWithDelay(
                 rechargeTime * Random.Range(0.7F, 1.3F),
@@ -62,10 +64,10 @@ namespace Controllers.Creatures {
             }
 
 
-            if (!Physics.Linecast(ShootPosition, Player.Instance.transform.position, out var hit)) {
+            if (!Physics.SphereCast(ShootPosition, 30, Player.Instance.transform.position, out var hit)) {
                 return;
             }
-            
+
             if (hit.transform.GetComponent<Player>() && Vector3.Distance(
                 transform.position,
                 Player.Instance.transform.position
