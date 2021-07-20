@@ -7,16 +7,17 @@ public class CameraScript : MonoBehaviour {
     private static Transform CameraHolder => Player.Instance.CameraHolder.transform;
 
     private Vector3 _distanceFromTarget;
-    [SerializeField] private float movementSpeed;
     [SerializeField] private float cameraDistance;
     [SerializeField] private float zoomOutScale;
 
     [SerializeField] private MinMaxFloat cameraRangeX, cameraRangeZ;
 
     private Transform _target;
+    private float _movementSpeed;
 
-    public void SetTarget(Transform targetTransform) {
+    public void SetTarget(Transform targetTransform, float speed) {
         _target = targetTransform;
+        _movementSpeed = speed;
 
         if (_target == CameraHolder) {
             _distanceFromTarget *= Mathf.Pow(zoomOutScale, 2);
@@ -32,11 +33,11 @@ public class CameraScript : MonoBehaviour {
         }
         
         if (!Input.GetKey(KeyCode.Q) && !Input.GetKey(KeyCode.E) || _target != CameraHolder) {
-            if (_target != null) {
+            if (_target != null && transform.parent == null) {
                 transform.position = Vector3.Lerp(
                     transform.position,
                     Fit(_target.position - _distanceFromTarget),
-                    Time.deltaTime * movementSpeed
+                    Time.deltaTime * _movementSpeed
                 );
             }
         }
@@ -76,6 +77,6 @@ public class CameraScript : MonoBehaviour {
         _distanceFromTarget = (transform.position - CameraHolder.position).normalized *
                               (cameraDistance / Mathf.Pow(zoomOutScale, 2));
         transform.LookAt(CameraHolder);
-        SetTarget(CameraHolder);
+        SetTarget(CameraHolder, 2);
     }
 }
