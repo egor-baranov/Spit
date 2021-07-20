@@ -16,6 +16,7 @@ namespace Core {
         public IEnumerable<Enemy> EnemyList => _enemyList;
 
         [SerializeField] private GameObject enemyPrefab;
+        [SerializeField] private int spawnEnemyCount;
 
         private readonly List<Enemy> _enemyList = new List<Enemy>();
 
@@ -49,7 +50,7 @@ namespace Core {
         }
 
         private void Start() {
-            SpawnEnemies(2);
+            SpawnEnemies(spawnEnemyCount);
         }
     }
 }
