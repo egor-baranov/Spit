@@ -20,7 +20,7 @@ namespace Core {
             private static IEnumerator DoWithDelayCoroutine(float time, UnityAction action,
                 UnityAction preAction = null) {
                 preAction?.Invoke();
-                yield return new WaitForSeconds(time);
+                yield return new WaitForSecondsRealtime(time);
                 try {
                     action.Invoke();
                 }
@@ -32,18 +32,18 @@ namespace Core {
             private static IEnumerator DoEveryIntervalCoroutine(float timeInterval, UnityAction action,
                 Func<bool> stopCondition) {
                 while (!stopCondition()) {
-                    yield return new WaitForSeconds(timeInterval);
+                    yield return new WaitForSecondsRealtime(timeInterval);
                     action.Invoke();
                 }
             }
 
             private static IEnumerator DoMultipleTimesCoroutine(float timeSeparator,
                 UnityAction action, int repeatTimes, float preDelay) {
-                yield return new WaitForSeconds(preDelay);
+                yield return new WaitForSecondsRealtime(preDelay);
                 foreach (var i in 0.Until(repeatTimes)) {
                     action.Invoke();
                     if (i != repeatTimes - 1) {
-                        yield return new WaitForSeconds(timeSeparator);
+                        yield return new WaitForSecondsRealtime(timeSeparator);
                     }
                 }
             }
