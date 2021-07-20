@@ -5,9 +5,24 @@ namespace Controllers.Projectiles {
     public class Bullet : Projectile {
         [SerializeField] private float damage;
 
-        private BulletTarget _target;
-        public void SetColor(Color color) => GetComponent<Light>().color = color;
-        public void SetTarget(BulletTarget target) => _target = target;
+        private float _playerModifier = 1, _enemyModifier = 1;
+        private BulletTarget _target = BulletTarget.Everything;
+
+        public Bullet SetColor(Color color) {
+            GetComponent<Light>().color = color;
+            return this;
+        }
+
+        public Bullet SetTarget(BulletTarget target) {
+            _target = target;
+            return this;
+        }
+
+        public Bullet SetModifiers(float playerModifier = 1F, float enemyModifier = 1F) {
+            _playerModifier = playerModifier;
+            _enemyModifier = enemyModifier;
+            return this;
+        }
 
         private void OnTriggerEnter(Collider other) {
             if (other.GetComponent<Bullet>()) {
@@ -22,11 +37,11 @@ namespace Controllers.Projectiles {
             }
 
             if ((_target == BulletTarget.Enemy || _target == BulletTarget.Everything) && enemy != null) {
-                enemy.ReceiveDamage(damage);
+                enemy.ReceiveDamage(damage * _enemyModifier);
             }
 
             if ((_target == BulletTarget.Player || _target == BulletTarget.Everything) && player != null) {
-                player.ReceiveDamage(damage);
+                player.ReceiveDamage(damage * _playerModifier);
             }
 
             Destroy(gameObject);
