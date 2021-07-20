@@ -19,14 +19,18 @@ public class CameraScript : MonoBehaviour {
         _target = targetTransform;
 
         if (_target == CameraHolder) {
-            _distanceFromTarget /= Mathf.Pow(zoomOutScale, 3);
+            _distanceFromTarget *= Mathf.Pow(zoomOutScale, 2);
         }
         else {
-            _distanceFromTarget *= Mathf.Pow(zoomOutScale, 3);
+            _distanceFromTarget /= Mathf.Pow(zoomOutScale, 2);
         }
     }
 
     public void LateUpdate() {
+        if (transform.parent == CameraHolder.transform && CameraHolder.transform.rotation.eulerAngles.x - 75 <= 0.01F) {
+            transform.parent = null;
+        }
+        
         if (!Input.GetKey(KeyCode.Q) && !Input.GetKey(KeyCode.E) || _target != CameraHolder) {
             if (_target != null) {
                 transform.position = Vector3.Lerp(
@@ -39,20 +43,21 @@ public class CameraScript : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Mouse1)) {
             _distanceFromTarget *= zoomOutScale;
+            transform.parent = CameraHolder;
         }
 
         if (Input.GetKeyUp(KeyCode.Mouse1)) {
             _distanceFromTarget /= zoomOutScale;
         }
 
+        if ((Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E)) && _target == CameraHolder) {
+            transform.parent = CameraHolder;
+        }
+        
         if ((Input.GetKeyUp(KeyCode.Q) || Input.GetKeyUp(KeyCode.E)) && _target == CameraHolder) {
             _distanceFromTarget = (transform.position - CameraHolder.position).normalized *
                                   (cameraDistance * (Input.GetKey(KeyCode.Mouse1) ? zoomOutScale : 1));
             transform.parent = null;
-        }
-
-        if ((Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E)) && _target == CameraHolder) {
-            transform.parent = CameraHolder;
         }
     }
 
@@ -69,7 +74,7 @@ public class CameraScript : MonoBehaviour {
 
     private void Start() {
         _distanceFromTarget = (transform.position - CameraHolder.position).normalized *
-                              (cameraDistance * Mathf.Pow(zoomOutScale, 3));
+                              (cameraDistance / Mathf.Pow(zoomOutScale, 2));
         transform.LookAt(CameraHolder);
         SetTarget(CameraHolder);
     }

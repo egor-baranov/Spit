@@ -40,6 +40,7 @@ namespace Core {
 
         public void RegisterEnemy(Enemy enemy) => _enemyList.Add(enemy);
         public void RemoveEnemy(Enemy enemy) => _enemyList.Remove(enemy);
+        public void SetTargetForAllEnemies(Transform target) => _enemyList.ForEach(it => it.SetTarget(target));
 
         private void Awake() {
             if (Instance != null) {
