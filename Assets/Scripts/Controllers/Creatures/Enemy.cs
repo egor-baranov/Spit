@@ -84,17 +84,15 @@ namespace Controllers.Creatures {
                 return;
             }
 
-
             if (!Physics.SphereCast(ShootPosition, 10, _target.position, out var hit)) {
                 UnFreeze();
                 return;
             }
-
-
+            
             if (Vector3.Distance(
-                transform.position,
-                _target.position
-            ) <= maxShootDistance) {
+                    transform.position,
+                    _target.position
+                ) <= maxShootDistance) {
                 // we cah shoot
                 _shootDirection = _target.position - transform.position;
                 _shootDirection = new Vector3(_shootDirection.x, 0, _shootDirection.z);
@@ -108,6 +106,7 @@ namespace Controllers.Creatures {
 
         protected override void OnDeath() {
             base.OnDeath();
+            Player.Instance.RechargeSoulBlast();
             GameManager.Instance.RemoveEnemy(this);
             GameManager.Instance.SpawnEnemies(2);
             GameManager.killedEnemiesCount += 1;
