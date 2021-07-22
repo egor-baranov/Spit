@@ -11,6 +11,7 @@ public class CameraScript : MonoBehaviour {
     [SerializeField] private float zoomOutScale;
 
     [SerializeField] private MinMaxFloat cameraRangeX, cameraRangeZ;
+    [SerializeField] private LayerMask layerMask;
 
     private Transform _target;
     private float _movementSpeed;
@@ -31,12 +32,18 @@ public class CameraScript : MonoBehaviour {
         if (transform.parent == CameraHolder.transform && CameraHolder.transform.rotation.eulerAngles.x - 75 <= 0.01F) {
             transform.parent = null;
         }
-        
-        if (!Input.GetKey(KeyCode.Q) && !Input.GetKey(KeyCode.E) || _target != CameraHolder) {
-            if (_target != null && transform.parent == null) {
+
+        if (!Input.GetKey(KeyCode.Q) && !Input.GetKey(KeyCode.E)) {
+            if (_target != null) {
+                var mousePosition = _target.position;
+                var ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask)) {
+                    mousePosition = new Vector3(raycastHit.point.x, _target.position.y, raycastHit.point.z);
+                }
+
                 transform.position = Vector3.Lerp(
                     transform.position,
-                    Fit(_target.position - _distanceFromTarget),
+                    Fit((_target.position * 3 + mousePosition) / 4 - _distanceFromTarget),
                     Time.deltaTime * _movementSpeed
                 );
             }
@@ -54,7 +61,7 @@ public class CameraScript : MonoBehaviour {
         if ((Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E)) && _target == CameraHolder) {
             transform.parent = CameraHolder;
         }
-        
+
         if ((Input.GetKeyUp(KeyCode.Q) || Input.GetKeyUp(KeyCode.E)) && _target == CameraHolder) {
             _distanceFromTarget = (transform.position - CameraHolder.position).normalized *
                                   (cameraDistance * (Input.GetKey(KeyCode.Mouse1) ? zoomOutScale : 1));
