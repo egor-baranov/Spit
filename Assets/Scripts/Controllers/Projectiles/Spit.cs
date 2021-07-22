@@ -35,7 +35,7 @@ namespace Controllers.Projectiles {
                         Vector3.Distance(y.transform.position, transform.position)
                     )
                 );
-                
+
                 Debug.Log(Vector3.Distance(list[0].transform.position, transform.position));
 
                 if (list.Count > 0 &&
@@ -43,8 +43,10 @@ namespace Controllers.Projectiles {
                     _killPlayer = false;
                     GameManager.soulShotCount += 1;
                     Player.Instance.SwapWith(list[0]);
+
                     Player.Instance.GetComponent<Rigidbody>()
-                        .AddForce(GetComponent<Rigidbody>().velocity * 4, ForceMode.Impulse);
+                        .AddForce((Player.Instance.transform.position - transform.position).normalized * 400,
+                            ForceMode.Impulse);
 
                     GlobalScope.ExecuteWithDelay(
                         slowmoTimeout,
@@ -67,6 +69,8 @@ namespace Controllers.Projectiles {
                 return;
             }
             
+            GlobalScope.ExecuteWithDelay(0.6F, Player.Instance.RechargeSoulBlast);
+
             CameraScript.Instance.SetTarget(Player.Instance.CameraHolder.transform, 2);
             GameManager.Instance.SetTargetForAllEnemies(Player.Instance.transform);
             Player.Instance.UnFreeze();
