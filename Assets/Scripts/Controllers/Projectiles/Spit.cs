@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using Controllers.Creatures;
 using Core;
 using UnityEngine;
@@ -8,12 +8,10 @@ namespace Controllers.Projectiles {
         [SerializeField] private float slowTimeDistance;
         [SerializeField] private float slowTimeScale;
         [SerializeField] private float slowmoTimeout;
+        [SerializeField] private float invasionRadius;
 
         private float _timeAliveLeft;
         private bool _killPlayer = true;
-        public bool wasEnemyDestroyed = false;
-
-        private Enemy _selectedEnemy = null;
 
         protected override void Awake() {
             base.Awake();
@@ -29,36 +27,36 @@ namespace Controllers.Projectiles {
             _timeAliveLeft -= Time.deltaTime;
             GetComponent<Light>().intensity = 30 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
             GetComponent<Light>().range = 30 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
-            
-            if (Input.GetKeyDown(KeyCode.Mouse1) && _selectedEnemy != null) {
-                _killPlayer = false;
-                wasEnemyDestroyed = true;
-                GameManager.soulShotCount += 1;
-                Player.Instance.SwapWith(_selectedEnemy);
-                Player.Instance.GetComponent<Rigidbody>()
-                    .AddForce(GetComponent<Rigidbody>().velocity * 4, ForceMode.Impulse);
 
-                GlobalScope.ExecuteWithDelay(
-                    slowmoTimeout,
-                    () => Time.timeScale = 1F,
-                    () => Time.timeScale = slowTimeScale
+            if (Input.GetKeyDown(KeyCode.Mouse1)) {
+                var list = GameManager.Instance.EnemyList.ToList();
+                list.Sort((x, y) =>
+                    Vector3.Distance(x.transform.position, transform.position).CompareTo(
+                        Vector3.Distance(y.transform.position, transform.position)
+                    )
                 );
-                GameManager.Instance.RemoveEnemy(_selectedEnemy);
-                Destroy(_selectedEnemy.gameObject);
-                Destroy(gameObject);
-            }
-        }
+                
+                Debug.Log(Vector3.Distance(list[0].transform.position, transform.position));
 
-        private void OnTriggerStay(Collider other) {
-            try {
-                if (!other.GetComponent<Enemy>() || _timeAliveLeft > maxTimeAlive - 0.1F ||
-                    wasEnemyDestroyed) {
-                    return;
+                if (list.Count > 0 &&
+                    Vector3.Distance(list[0].transform.position, transform.position) <= invasionRadius) {
+                    _killPlayer = false;
+                    GameManager.soulShotCount += 1;
+                    Player.Instance.SwapWith(list[0]);
+                    Player.Instance.GetComponent<Rigidbody>()
+                        .AddForce(GetComponent<Rigidbody>().velocity * 4, ForceMode.Impulse);
+
+                    GlobalScope.ExecuteWithDelay(
+                        slowmoTimeout,
+                        () => Time.timeScale = 1F,
+                        () => Time.timeScale = slowTimeScale
+                    );
+                    GameManager.Instance.RemoveEnemy(list[0]);
+                    Destroy(list[0].gameObject);
                 }
 
-                _selectedEnemy = other.transform.GetComponent<Enemy>();
+                Destroy(gameObject);
             }
-            catch (NullReferenceException) { }
         }
 
         protected override void OnDestroy() {
@@ -68,8 +66,7 @@ namespace Controllers.Projectiles {
                 Player.Instance.HealthPoints = 0;
                 return;
             }
-
-            // GlobalScope.ExecuteWithDelay(0.5F, () => Player.Instance.RechargeSoulBlast());
+            
             CameraScript.Instance.SetTarget(Player.Instance.CameraHolder.transform, 2);
             GameManager.Instance.SetTargetForAllEnemies(Player.Instance.transform);
             Player.Instance.UnFreeze();

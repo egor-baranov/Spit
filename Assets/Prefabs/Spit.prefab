@@ -150,7 +150,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 0
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -210,7 +210,7 @@ MonoBehaviour:
   slowTimeDistance: 50
   slowTimeScale: 0.3
   slowmoTimeout: 0.5
-  _wasEnemyDestroyed: 0
+  invasionRadius: 20
 --- !u!54 &7417916123268976603
 Rigidbody:
   m_ObjectHideFlags: 0
