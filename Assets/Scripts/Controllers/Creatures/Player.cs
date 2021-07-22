@@ -153,10 +153,10 @@ namespace Controllers.Creatures {
                 GetComponent<Rigidbody>().velocity = velocity;
             }
 
-            if (Input.GetKey(KeyCode.Q) ^ Input.GetKey(KeyCode.E)) {
-                transform.Rotate(transform.up, (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed);
-                _targetCameraHolderAngleY += (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed;
-            }
+            // if (Input.GetKey(KeyCode.Q) ^ Input.GetKey(KeyCode.E)) {
+            //     transform.Rotate(transform.up, (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed);
+            //     _targetCameraHolderAngleY += (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed;
+            // }
 
             if (Input.GetKey(KeyCode.Mouse0)) {
                 Shoot();
