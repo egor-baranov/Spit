@@ -66,8 +66,8 @@ namespace Core {
             try {
                 _relatedMonoBehaviour.DoWithDelay(delay, action, preAction);
             }
-            catch (MissingReferenceException exception) {
-                // ignored
+            catch (MissingReferenceException) {
+                Init();
             }
         }
 
@@ -76,7 +76,12 @@ namespace Core {
             UnityAction action,
             Func<bool> stopCondition = null) {
             Init();
-            _relatedMonoBehaviour.DoEveryInterval(timeInterval, action, stopCondition);
+            try {
+                _relatedMonoBehaviour.DoEveryInterval(timeInterval, action, stopCondition);
+            }
+            catch (MissingReferenceException) {
+                Init();
+            }
         }
 
         public static void ExecuteMultipleTimes(
@@ -85,7 +90,12 @@ namespace Core {
             int count,
             float preDelay = 0F) {
             Init();
-            _relatedMonoBehaviour.DoMultipleTimes(timeSeparator, action, count, preDelay);
+            try {
+                _relatedMonoBehaviour.DoMultipleTimes(timeSeparator, action, count, preDelay);
+            }
+            catch (MissingReferenceException) {
+                Init();
+            }
         }
 
         private static void Init() {
