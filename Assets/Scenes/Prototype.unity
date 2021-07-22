@@ -503,8 +503,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 227739084}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.3, y: 0, z: -5}
-  m_LocalScale: {x: 459.94577, y: 1, z: 1154.7408}
+  m_LocalPosition: {x: 45, y: 0, z: -14.5}
+  m_LocalScale: {x: 2116.204, y: 0.99999994, z: 1877.8492}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -820,6 +820,9 @@ MonoBehaviour:
   cameraRangeZ:
     min: -500
     max: 500
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 768
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -871,7 +874,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0.59831196, y: 0.0046170866, z: 0.0020401923, w: 0.80124736}
-  m_LocalPosition: {x: -2.5246978, y: 151.19688, z: -38.822876}
+  m_LocalPosition: {x: -2.5246978, y: 192, z: -23}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -887,7 +890,7 @@ GameObject:
   m_Component:
   - component: {fileID: 635149398}
   - component: {fileID: 635149399}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Aim
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1074,6 +1077,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: HP Slider
       objectReference: {fileID: 0}
+    - target: {fileID: 8150201047973874761, guid: f78597aca4d3d894289b7b5eee6c94c7,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 9013343594305532999, guid: f78597aca4d3d894289b7b5eee6c94c7,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f78597aca4d3d894289b7b5eee6c94c7, type: 3}
 --- !u!4 &823300255 stripped
@@ -1144,7 +1157,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   data:
-    dataString: UEsDBBQAAAgIAAAYIex8AyZESQIAAPIEAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFlVMty2jAU/RVG69KxaQ1Jd60hpAsCE9LJxhshXdsaZMmjR3gN/15JNthxVtbcc+7RuQ/5gpjQNRAj1VIxupIU0K8R8mf0bdSBz3DEhRRbdoYb551RU3oSDpxXbJh08dinaVmBUYz8FgX35MgFrWC5VNWCFpBKbbQL55hrcJCSxmcLF7qM0LFNOLXfs/+Oru5EQBhQHWucDGjjJPCsIBxXNVDvt6NPoptsHEWNonDFtCSvRSTnTLdOkDnVodIU19q6OhyBMuwqCx58oSWwojReup+8znMNprWl8GnOlGtQo4r+yKZrFdb7xtoH5jYYiCfBUyO6+oKP4wDnSlbPt3vjUJIpGdm/4hPB2vTa2g/PPxu34oD5Hu84vJcgXuRSSSuoA42yPtVqmMx7Uvfa0hLIvuM1XgdBW38dZNwN8hqqP6acVTsf+f6zCWy5DP1+9Dmg3GT+OsNhMXSr5KLexD8Nb7job1ALPDGljYPaC4V3t5NWeSpahJ75YqxJpRIQwq3nGgTm5rRxMmY4wgHWu3aAPGH/VtrLW+z2BAYpIdzxo2gAbeThPixdysMKdLm2hjMBnWkPvLg+pVKIZsP6Pbmlba3KMemlFZbRz6uF8miSPDwkOIfHfDbdTcd5nER4N/1BIprM4ukMhd1jwtWJ+aYx2rbHTU104sLt2e0XMloqXIdtpwofluxcyV7LmcjlligAsW4U7sZBuUvcq6QLylyDtmAME2He6JIhLskeaHYXykKli6NROOtUMlSzD2l8JENp+HFk6Iqu/wFQSwMEFAAACAgAABgh7LL7pA1tAAAAeAAAAAkAJABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGrVipLLSrOzM9TslIw0TPSMzTVUVBKL0osyCgGihiCOKWZKSB2tFKagZGphYVpYlqqZZq5WZKZbpqhqUFikplxskGKqbmhmblSLFB9SWVBql9ibipET0BiSUZaZl5KZl66nntRZoo7yGil2FoAUEsBAi0AFAAACAgAABgh7HwDJkRJAgAA8gQAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAABgh7LL7pA1tAAAAeAAAAAkAJAAAAAAAAAAAAAAAlgIAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAABOAwAAAAA=
+    dataString: UEsDBBQAAAgIAAAYIewmzQtUSgIAAPMEAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFlVMtymzAU/RWP1nUH3GIn3bXYcbpw7InTyYaNLF1AYyExesSv8b9XEtgQsoI599xzz33ABTGhayBGqqVidCUpoF8j5N/Rt1EXfIYjLqTYsjPcOO+MmtKTcOC8YsOkw2OfpmUFRjHyWxTckyMHWsFyqaoFLSCV2mgH55hrcCEljc8WDrqM0LFNOLXPs3+Oru6NgDCgOtY4GdDGSeBZQTiuaqDeb0efRDfZOIoaReGaaUlei0jOmW6dIHOqQ6cprrV1fTgCZdh1Fjz4RktgRWm8dD95necaTGtL4dOcKTegRhX9kc3UKqz3jbUPzK2vM0mmjalGdfWFMI5DOFeyer4VjkNPpmRk/4pPBGvTm2sfnn92bsUB8z3ecXgvQbzIpZJWUBc0yvpUq2Ey70ndm0tLIPuO13gdgLb+usm42+Q1tH9MOat2Hvn+swG2XIaBP/ocUG41f53hcBm6VXKoN/FPwxsu+ifUBp6Y0saF2oLCu9tJqzwVLcLMfDPWpFIJCHDruQaBuTltnIwZ7nAQ65UdRJ6w/1ja4m3s9g0MUgLc8aNoENrIw31ZupSHFehybQ1nAjrTPvDi5pRKIZoT68/klra1Ksekl1ZYRj+fFsqjSfLwkOAcHvPZdDcd53ES4d30B4loMounMxRujwnXJ+abxmg7Hrc10YkLd2e3f8hoqXAdzp0qfFiycyV7I2cil1uiAMS6UbgbB+WKuM+SLihzA9qCMUyEfaNLhrgke6DZXSgLnS6ORuGsU8lQzT6k8UiG0vDnyNAVXf8DUEsDBBQAAAgIAAAYIeyy+6QNbQAAAHgAAAAJACQAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0Bq1YqSy0qzszPU7JSMNEz0jM01VFQSi9KLMgoBooYgjilmSkgdrRSmoGRqYWFaWJaqmWauVmSmW6aoalBYpKZcbJBiqm5oZm5UixQfUllQapfYm4qRE9AYklGWmZeSmZeup57UWaKO8hopdhaAFBLAQItABQAAAgIAAAYIewmzQtUSgIAAPMEAAALACQAAAAAAAAAAAAAAAAAAABncmFwaDAuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLAQItABQAAAgIAAAYIeyy+6QNbQAAAHgAAAAJACQAAAAAAAAAAAAAAJcCAABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFQSwUGAAAAAAIAAgC4AAAATwMAAAAA
     upgradeData: 
     file_cachedStartup: {fileID: 0}
     data_cachedStartup: 
@@ -1157,7 +1170,7 @@ MonoBehaviour:
   manualDebugFloorRoof: 0
   showSearchTree: 0
   unwalkableNodeDebugSize: 0.3
-  logPathResults: 1
+  logPathResults: 0
   maxNearestNodeDistance: 100
   scanOnStartup: 1
   fullGetNearestSearch: 0
@@ -1520,7 +1533,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1246380277}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Camera Holder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1898,7 +1911,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1398285786}
   - component: {fileID: 1398285787}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1983,7 +1996,7 @@ GameObject:
   - component: {fileID: 1610636063}
   - component: {fileID: 1610636065}
   - component: {fileID: 1610636066}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Body
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -2353,7 +2366,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1668207479}
   - component: {fileID: 1668207480}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Highlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2448,7 +2461,7 @@ GameObject:
   - component: {fileID: 1829646480}
   - component: {fileID: 1829646482}
   - component: {fileID: 1829646484}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
