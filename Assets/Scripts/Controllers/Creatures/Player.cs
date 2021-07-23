@@ -1,15 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Controllers.Projectiles;
 using Core;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Controllers.Creatures {
     public class Player : Creature {
         public static Player Instance { get; private set; }
 
         public bool IsFreezed { get; private set; }
+
+        public override void ReceiveDamage(float damage) {
+            if (_isInvincible) return;
+            GetComponent<Animator>().Play("Receive Damage");
+            base.ReceiveDamage(damage);
+            _isInvincible = true;
+            GlobalScope.ExecuteWithDelay(3, () => {
+                _isInvincible = false;
+                GetComponent<Animator>().Play("Idle");
+            });
+        }
 
         public GameObject CameraHolder => transform.GetChild(1).gameObject;
         private GameObject Shadow => transform.GetChild(2).gameObject;
@@ -28,8 +41,7 @@ namespace Controllers.Creatures {
         private float _targetCameraHolderAngleX, _targetCameraHolderAngleY;
         private float _targetShadowScale;
 
-        private bool _canShoot = true;
-        private bool _canPerformSoulBlast = true;
+        private bool _canShoot = true, _canPerformSoulBlast = true, _isInvincible = false;
 
         private Vector3 _shootDirection;
 
@@ -61,12 +73,11 @@ namespace Controllers.Creatures {
                 )
                 .GetComponent<Bullet>()
                 .SetTarget(Bullet.BulletTarget.Enemy)
-                .SetColor(Color.red);
+                .SetColor(Color.red).SetSpeedModifier(2F);
 
             bullet.gameObject.GetComponent<Rigidbody>().velocity =
-                _shootDirection.normalized * bulletPrefab.GetComponent<Projectile>().MovementSpeed;
-
-            ReceiveDamage(shotCost);
+                _shootDirection.normalized * bullet.GetComponent<Bullet>().MovementSpeed;
+            HealthPoints -= shotCost;
 
             GlobalScope.ExecuteWithDelay(
                 rechargeTime * Random.Range(0.8F, 1.2F),
@@ -98,7 +109,7 @@ namespace Controllers.Creatures {
 
             GlobalScope.ExecuteEveryInterval(
                 1F,
-                () => { ReceiveDamage(0.5F); },
+                () => HealthPoints -= 0.5F,
                 () => !IsAlive
             );
         }
@@ -136,7 +147,6 @@ namespace Controllers.Creatures {
                     100 * Time.deltaTime
                 );
 
-
             if (IsAlive && !IsFreezed) {
                 PerformControls();
             }
@@ -153,11 +163,6 @@ namespace Controllers.Creatures {
                 GetComponent<Rigidbody>().velocity = velocity;
             }
 
-            // if (Input.GetKey(KeyCode.Q) ^ Input.GetKey(KeyCode.E)) {
-            //     transform.Rotate(transform.up, (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed);
-            //     _targetCameraHolderAngleY += (Input.GetKey(KeyCode.Q) ? -1 : 1) * rotationSpeed;
-            // }
-
             if (Input.GetKey(KeyCode.Mouse0)) {
                 Shoot();
             }
@@ -172,6 +177,12 @@ namespace Controllers.Creatures {
                 _targetShadowScale = 0;
 
                 SoulBlast();
+            }
+        }
+
+        private void OnCollisionEnter(Collision other) {
+            if (other.transform.GetComponent<Enemy>()) {
+                ReceiveDamage(1F);
             }
         }
 
