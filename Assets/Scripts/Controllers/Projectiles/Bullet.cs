@@ -24,6 +24,11 @@ namespace Controllers.Projectiles {
             return this;
         }
 
+        public Bullet SetSpeedModifier(float speedModifier) {
+            movementSpeed *= speedModifier;
+            return this;
+        }
+
         private void OnTriggerEnter(Collider other) {
             if (other.GetComponent<Bullet>()) {
                 return;

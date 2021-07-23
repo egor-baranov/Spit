@@ -71,7 +71,7 @@ namespace Controllers.Projectiles {
             
             GlobalScope.ExecuteWithDelay(0.6F, Player.Instance.RechargeSoulBlast);
 
-            CameraScript.Instance.SetTarget(Player.Instance.CameraHolder.transform, 2);
+            CameraScript.Instance.SetTarget(Player.Instance.CameraHolder.transform, 5);
             GameManager.Instance.SetTargetForAllEnemies(Player.Instance.transform);
             Player.Instance.UnFreeze();
         }
