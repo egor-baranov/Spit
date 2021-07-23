@@ -25,8 +25,8 @@ namespace Controllers.Projectiles {
         protected override void Update() {
             base.Awake();
             _timeAliveLeft -= Time.deltaTime;
-            GetComponent<Light>().intensity = 30 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
-            GetComponent<Light>().range = 30 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
+            GetComponent<Light>().intensity = 8; //0 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
+            GetComponent<Light>().range = 200 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
 
             if (Input.GetKeyDown(KeyCode.Mouse1)) {
                 var list = GameManager.Instance.EnemyList.ToList();
@@ -68,8 +68,6 @@ namespace Controllers.Projectiles {
                 Player.Instance.HealthPoints = 0;
                 return;
             }
-            
-            GlobalScope.ExecuteWithDelay(0.6F, Player.Instance.RechargeSoulBlast);
 
             CameraScript.Instance.SetTarget(Player.Instance.CameraHolder.transform, 5);
             GameManager.Instance.SetTargetForAllEnemies(Player.Instance.transform);
