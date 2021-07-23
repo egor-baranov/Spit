@@ -29,7 +29,7 @@ namespace Controllers.Creatures {
         [SerializeField] protected float maxHp;
         [SerializeField] protected float movementSpeed;
 
-        public void ReceiveDamage(float damage) => HealthPoints -= damage;
+        public virtual void ReceiveDamage(float damage) => HealthPoints -= damage;
 
         public void SwapWith(Creature other) {
             AcceptIntent(other.AcceptIntent(Intent));
