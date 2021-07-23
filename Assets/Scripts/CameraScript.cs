@@ -7,6 +7,7 @@ public class CameraScript : MonoBehaviour {
     private static Transform CameraHolder => Player.Instance.CameraHolder.transform;
 
     private Vector3 _distanceFromTarget;
+    private readonly Vector3 _shootingDistance = -Vector3.up * 240;
     [SerializeField] private float cameraDistance;
     [SerializeField] private float zoomOutScale;
 
@@ -19,54 +20,34 @@ public class CameraScript : MonoBehaviour {
     public void SetTarget(Transform targetTransform, float speed) {
         _target = targetTransform;
         _movementSpeed = speed;
-
-        if (_target == CameraHolder) {
-            _distanceFromTarget *= Mathf.Pow(zoomOutScale, 2);
-        }
-        else {
-            _distanceFromTarget /= Mathf.Pow(zoomOutScale, 2);
-        }
     }
 
     public void LateUpdate() {
-        if (transform.parent == CameraHolder.transform && CameraHolder.transform.rotation.eulerAngles.x - 75 <= 0.01F) {
-            transform.parent = null;
-        }
-
-        if (!Input.GetKey(KeyCode.Q) && !Input.GetKey(KeyCode.E)) {
-            if (_target != null) {
-                var mousePosition = _target.position;
-                var ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask)) {
-                    mousePosition = new Vector3(raycastHit.point.x, _target.position.y, raycastHit.point.z);
-                }
-
-                transform.position = Vector3.Lerp(
-                    transform.position,
-                    Fit((_target.position * 3 + mousePosition) / 4 - _distanceFromTarget),
-                    Time.deltaTime * _movementSpeed
-                );
+        if (_target != null) {
+            var mousePosition = _target.position;
+            var ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask)) {
+                mousePosition = new Vector3(raycastHit.point.x, _target.position.y, raycastHit.point.z);
             }
+
+            transform.position = Vector3.Lerp(
+                transform.position,
+                Fit((_target.position * 7 + mousePosition) / 8 +
+                    _target.GetComponentInParent<Rigidbody>().velocity.normalized * 15 -
+                    (Input.GetKey(KeyCode.Mouse1) ? _shootingDistance : _distanceFromTarget)),
+                Time.deltaTime * _movementSpeed
+            );
         }
 
-        if (Input.GetKeyDown(KeyCode.Mouse1)) {
-            _distanceFromTarget *= zoomOutScale;
-            transform.parent = CameraHolder;
-        }
-
-        if (Input.GetKeyUp(KeyCode.Mouse1)) {
-            _distanceFromTarget /= zoomOutScale;
-        }
-
-        if ((Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E)) && _target == CameraHolder) {
-            transform.parent = CameraHolder;
-        }
-
-        if ((Input.GetKeyUp(KeyCode.Q) || Input.GetKeyUp(KeyCode.E)) && _target == CameraHolder) {
-            _distanceFromTarget = (transform.position - CameraHolder.position).normalized *
-                                  (cameraDistance * (Input.GetKey(KeyCode.Mouse1) ? zoomOutScale : 1));
-            transform.parent = null;
-        }
+        transform.rotation = Quaternion.RotateTowards(
+            CameraHolder.transform.rotation,
+            Quaternion.Euler(
+                Input.GetKey(KeyCode.Mouse1) ? 90 : 73,
+                transform.rotation.y,
+                transform.rotation.z
+            ),
+            Time.deltaTime
+        );
     }
 
     private Vector3 Fit(Vector3 position) =>
@@ -84,6 +65,6 @@ public class CameraScript : MonoBehaviour {
         _distanceFromTarget = (transform.position - CameraHolder.position).normalized *
                               (cameraDistance / Mathf.Pow(zoomOutScale, 2));
         transform.LookAt(CameraHolder);
-        SetTarget(CameraHolder, 2);
+        SetTarget(CameraHolder, 5);
     }
 }
