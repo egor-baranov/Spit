@@ -33,7 +33,7 @@ namespace Core {
         public void SpawnEnemies(int count) => 0.Until(count).ToList().ForEach(it =>
             Instantiate(
                 enemyPrefab,
-                new Vector3(Random.Range(-94, 94), 6, Random.Range(-142, 150)),
+                new Vector3(Random.Range(-200, 200), 6, Random.Range(-200, 200)),
                 Quaternion.identity
             )
         );
