@@ -8,8 +8,11 @@ namespace Controllers.Projectiles {
         private float _playerModifier = 1, _enemyModifier = 1;
         private BulletTarget _target = BulletTarget.Everything;
 
+        private GameObject Halo => transform.Find("Halo").gameObject;
+
         public Bullet SetColor(Color color) {
             GetComponent<Light>().color = color;
+            Halo.GetComponent<Light>().color = color;
             return this;
         }
 
