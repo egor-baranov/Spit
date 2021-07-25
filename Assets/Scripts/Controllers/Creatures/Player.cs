@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Controllers.Projectiles;
@@ -24,8 +23,8 @@ namespace Controllers.Creatures {
             });
         }
 
-        public GameObject CameraHolder => transform.GetChild(1).gameObject;
-        private GameObject Shadow => transform.GetChild(2).gameObject;
+        public GameObject CameraHolder => transform.Find("Camera Holder").gameObject;
+        private GameObject Shadow => transform.Find("Shadow").gameObject;
         private GameObject Highlight => transform.Find("Highlight").gameObject;
 
         [SerializeField] private float rotationSpeed;
@@ -41,7 +40,8 @@ namespace Controllers.Creatures {
         private float _targetCameraHolderAngleX, _targetCameraHolderAngleY;
         private float _targetShadowScale;
 
-        private bool _canShoot = true, _canPerformSoulBlast = true, _isInvincible = false;
+        private bool _canShoot = true, _canPerformSoulBlast = true, _isInvincible = false, isFaceRight = true;
+        private Quaternion leftRotation, rightRotation;
 
         private Vector3 _shootDirection;
 
@@ -52,14 +52,12 @@ namespace Controllers.Creatures {
             IsFreezed = true;
             Body.SetActive(false);
             GetComponent<CapsuleCollider>().enabled = false;
-            Highlight.SetActive(false);
         }
 
         public void UnFreeze() {
             IsFreezed = false;
             GetComponent<CapsuleCollider>().enabled = true;
             Body.SetActive(true);
-            Highlight.SetActive(true);
         }
 
         private void Shoot() {
@@ -68,7 +66,7 @@ namespace Controllers.Creatures {
             _canShoot = false;
             var bullet = Instantiate(
                     bulletPrefab,
-                    transform.position + _shootDirection.normalized * 15,
+                    transform.position + _shootDirection.normalized * 25,
                     Quaternion.identity
                 )
                 .GetComponent<Bullet>()
@@ -116,7 +114,10 @@ namespace Controllers.Creatures {
 
         protected override void Start() {
             base.Start();
-            Body.transform.LookAt(CameraScript.Instance.transform);
+            leftRotation = Quaternion.LookRotation(transform.position - CameraScript.Instance.transform.position);
+            rightRotation = Quaternion.LookRotation(CameraScript.Instance.transform.position);
+
+            Body.transform.rotation = leftRotation;
         }
 
         protected override void Update() {
@@ -147,9 +148,20 @@ namespace Controllers.Creatures {
                     100 * Time.deltaTime
                 );
 
+            if (Input.GetKey(KeyCode.Mouse1)) {
+                DrawLine();
+            }
+
             if (IsAlive && !IsFreezed) {
                 PerformControls();
             }
+        }
+
+        private void DrawLine() {
+            var lineRenderer = GameObject.Find("Line Renderer").GetComponent<LineRenderer>();
+            lineRenderer.positionCount = 2;
+            lineRenderer.SetPosition(0, transform.position + _shootDirection.normalized * 10);
+            lineRenderer.SetPosition(1, transform.position + _shootDirection.normalized * 3000);
         }
 
         private void PerformControls() {
@@ -178,6 +190,13 @@ namespace Controllers.Creatures {
 
                 SoulBlast();
             }
+
+            if (!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A)) {
+                return;
+            }
+
+            isFaceRight = Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A);
+            Body.transform.rotation = isFaceRight ? leftRotation : leftRotation;
         }
 
         private void OnCollisionEnter(Collision other) {
