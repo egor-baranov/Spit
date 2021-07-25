@@ -16,10 +16,12 @@ public class CameraScript : MonoBehaviour {
 
     private Transform _target;
     private float _movementSpeed;
+    private float _zoomCoefficient;
 
-    public void SetTarget(Transform targetTransform, float speed) {
+    public void SetTarget(Transform targetTransform, float speed, float zoomCoefficient = 1F) {
         _target = targetTransform;
         _movementSpeed = speed;
+        _zoomCoefficient = zoomCoefficient;
     }
 
     public void LateUpdate() {
@@ -34,7 +36,7 @@ public class CameraScript : MonoBehaviour {
                 transform.position,
                 Fit((_target.position * 7 + mousePosition) / 8 +
                     _target.GetComponentInParent<Rigidbody>().velocity.normalized * 15 -
-                    (Input.GetKey(KeyCode.Mouse1) ? _shootingDistance : _distanceFromTarget)),
+                    (Input.GetKey(KeyCode.Mouse1) ? _shootingDistance : _distanceFromTarget) * _zoomCoefficient),
                 Time.deltaTime * _movementSpeed
             );
         }
