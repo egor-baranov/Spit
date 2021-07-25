@@ -96,7 +96,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 2b80574bac300c54da7b13deb85bbb4c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -386,22 +386,22 @@ PrefabInstance:
     - target: {fileID: 6952740539946862425, guid: f78597aca4d3d894289b7b5eee6c94c7,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6952740539946862425, guid: f78597aca4d3d894289b7b5eee6c94c7,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6952740539946862425, guid: f78597aca4d3d894289b7b5eee6c94c7,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6952740539946862425, guid: f78597aca4d3d894289b7b5eee6c94c7,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6952740539946862425, guid: f78597aca4d3d894289b7b5eee6c94c7,
         type: 3}
@@ -411,12 +411,12 @@ PrefabInstance:
     - target: {fileID: 6952740539946862425, guid: f78597aca4d3d894289b7b5eee6c94c7,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 17
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6952740539946862425, guid: f78597aca4d3d894289b7b5eee6c94c7,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 6952740539946862425, guid: f78597aca4d3d894289b7b5eee6c94c7,
         type: 3}
