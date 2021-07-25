@@ -18,14 +18,14 @@ namespace Controllers.Projectiles {
             _timeAliveLeft = maxTimeAlive;
             Destroy(gameObject, maxTimeAlive);
 
-            CameraScript.Instance.SetTarget(transform, 8);
+            CameraScript.Instance.SetTarget(transform, 8, 0.5F);
             GameManager.Instance.SetTargetForAllEnemies(transform);
         }
 
         protected override void Update() {
             base.Awake();
             _timeAliveLeft -= Time.deltaTime;
-            GetComponent<Light>().intensity = 8; //0 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
+            GetComponent<Light>().intensity = 8;
             GetComponent<Light>().range = 200 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
 
             if (Input.GetKeyDown(KeyCode.Mouse1)) {
