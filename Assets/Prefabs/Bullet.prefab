@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8992611973871144649}
   - component: {fileID: 3989832457036148560}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Halo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 9099180126623129540}
   - component: {fileID: 5898462747100810257}
   - component: {fileID: 8638688114809136277}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
