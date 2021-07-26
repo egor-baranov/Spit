@@ -25,6 +25,10 @@ public class CameraScript : MonoBehaviour {
     }
 
     public void LateUpdate() {
+        if (Player.Instance.HealthPoints <= 0) {
+            return;
+        }
+
         if (_target != null) {
             var mousePosition = _target.position;
             var ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
@@ -35,8 +39,10 @@ public class CameraScript : MonoBehaviour {
             transform.position = Vector3.Lerp(
                 transform.position,
                 Fit((_target.position * 7 + mousePosition) / 8 +
-                    _target.GetComponentInParent<Rigidbody>().velocity.normalized * 15 -
-                    (Input.GetKey(KeyCode.Mouse1) ? _shootingDistance : _distanceFromTarget) * _zoomCoefficient),
+                    _target.GetComponentInParent<Rigidbody>().velocity / 5 -
+                    (Input.GetKey(KeyCode.Mouse1) && Player.Instance.CanPerformSoulBlast
+                        ? _shootingDistance
+                        : _distanceFromTarget) * _zoomCoefficient),
                 Time.deltaTime * _movementSpeed
             );
         }
@@ -44,7 +50,9 @@ public class CameraScript : MonoBehaviour {
         transform.rotation = Quaternion.RotateTowards(
             CameraHolder.transform.rotation,
             Quaternion.Euler(
-                Input.GetKey(KeyCode.Mouse1) ? 90 : 73,
+                Input.GetKey(KeyCode.Mouse1) && Player.Instance.CanPerformSoulBlast || _target != CameraHolder
+                    ? 90
+                    : 73,
                 transform.rotation.y,
                 transform.rotation.z
             ),
