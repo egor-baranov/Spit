@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Controllers.Creatures;
 using Core.Managers;
@@ -52,6 +53,15 @@ namespace Core {
 
         private void Start() {
             SpawnEnemies(spawnEnemyCount);
+        }
+
+        private void Update() {
+            if (Player.Instance.HealthPoints > 0) {
+                UiManager.Instance.DisplayScore(
+                    (int) Time.timeSinceLevelLoad * (soulShotCount + 1) * (killedEnemiesCount + 1),
+                    (int) Time.timeSinceLevelLoad, killedEnemiesCount, soulShotCount
+                );
+            }
         }
     }
 }
