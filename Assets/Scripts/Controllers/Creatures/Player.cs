@@ -4,6 +4,7 @@ using System.Linq;
 using Controllers.Projectiles;
 using Core;
 using UnityEngine;
+using Util.ExtensionMethods;
 using Random = UnityEngine.Random;
 
 namespace Controllers.Creatures {
@@ -11,6 +12,8 @@ namespace Controllers.Creatures {
         public static Player Instance { get; private set; }
 
         public bool IsFreezed { get; private set; }
+
+        public bool CanPerformSoulBlast => _canPerformSoulBlast;
 
         public override void ReceiveDamage(float damage) {
             if (_isInvincible) return;
@@ -31,7 +34,7 @@ namespace Controllers.Creatures {
         [SerializeField] private float rechargeTime;
         [SerializeField] private float shotCost;
 
-        [SerializeField] private LayerMask layerMask;
+        [SerializeField] private LayerMask layerMask, wallLayerMask;
 
         [SerializeField] private GameObject spitPrefab;
         [SerializeField] private GameObject bulletPrefab;
@@ -40,7 +43,8 @@ namespace Controllers.Creatures {
         private float _targetCameraHolderAngleX, _targetCameraHolderAngleY;
         private float _targetShadowScale;
 
-        private bool _canShoot = true, _canPerformSoulBlast = true, _isInvincible = false, isFaceRight = true;
+        [SerializeField] private bool _canPerformSoulBlast = true;
+        private bool _canShoot = true, _isInvincible = false, isFaceRight = true;
         private Quaternion leftRotation, rightRotation;
 
         private Vector3 _shootDirection;
@@ -148,8 +152,11 @@ namespace Controllers.Creatures {
                     100 * Time.deltaTime
                 );
 
-            if (Input.GetKey(KeyCode.Mouse1)) {
+            if (Input.GetKey(KeyCode.Mouse1) && _canPerformSoulBlast) {
                 DrawLine();
+            }
+            else {
+                ClearLine();
             }
 
             if (IsAlive && !IsFreezed) {
@@ -160,8 +167,59 @@ namespace Controllers.Creatures {
         private void DrawLine() {
             var lineRenderer = GameObject.Find("Line Renderer").GetComponent<LineRenderer>();
             lineRenderer.positionCount = 2;
-            lineRenderer.SetPosition(0, transform.position + _shootDirection.normalized * 10);
-            lineRenderer.SetPosition(1, transform.position + _shootDirection.normalized * 3000);
+
+            var maxLineLength = 650F;
+            var positionList = new List<Vector3>();
+            var skipPoint = new List<bool>();
+            var direction = _shootDirection;
+            positionList.Add(transform.position + _shootDirection.normalized * 10);
+            skipPoint.Add(false);
+            while (maxLineLength > 0) {
+                if (Physics.Raycast(
+                    new Ray(positionList[0.Until(positionList.Count).Last(it => !skipPoint[it])], direction),
+                    out RaycastHit raycastHit,
+                    maxLineLength, wallLayerMask)) {
+                    if (raycastHit.transform.CompareTag("Enemy")) {
+                        positionList.Add(raycastHit.point);
+                        skipPoint.Add(false);
+                        break;
+                    }
+
+                    maxLineLength -=
+                        Vector3.Distance(positionList[0.Until(positionList.Count).Last(it => !skipPoint[it])],
+                            raycastHit.point
+                        );
+
+                    if (raycastHit.transform.CompareTag("Wall")) {
+                        direction = Vector3.Reflect(direction, raycastHit.normal);
+                        skipPoint.Add(false);
+                        positionList.Add(raycastHit.point);
+                    }
+                    else {
+                        skipPoint.Add(true);
+                        positionList.Add(raycastHit.point + direction.normalized * 30);
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+
+            if (maxLineLength > 0) {
+                positionList.Add(positionList.LastElement() + direction.normalized * maxLineLength);
+                skipPoint.Add(false);
+            }
+
+            var pointIndexList = 0.Until(positionList.Count).Where(it => !skipPoint[it]).ToList();
+            lineRenderer.positionCount = pointIndexList.Count;
+            foreach (var i in 0.Until(pointIndexList.Count)) {
+                lineRenderer.SetPosition(i, positionList[pointIndexList[i]]);
+            }
+        }
+
+        private void ClearLine() {
+            var lineRenderer = GameObject.Find("Line Renderer").GetComponent<LineRenderer>();
+            lineRenderer.positionCount = 0;
         }
 
         private void PerformControls() {
@@ -179,15 +237,7 @@ namespace Controllers.Creatures {
                 Shoot();
             }
 
-            if (Input.GetKeyDown(KeyCode.Mouse1)) {
-                _targetCameraHolderAngleX = 89.9F;
-                _targetShadowScale = 3;
-            }
-
             if (Input.GetKeyUp(KeyCode.Mouse1)) {
-                _targetCameraHolderAngleX = cameraAngle;
-                _targetShadowScale = 0;
-
                 SoulBlast();
             }
 
