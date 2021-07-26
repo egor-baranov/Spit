@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Core.Managers {
@@ -7,11 +8,21 @@ namespace Core.Managers {
 
         private Text ScoreText => deathPanel.transform.Find("Score").GetComponent<Text>();
 
+
         [SerializeField] private GameObject deathPanel;
+
+        [SerializeField] private Text currentScoreText;
 
         public void OnDeath(int score) {
             deathPanel.SetActive(true);
-            ScoreText.text = $"Score: {score}";
+        }
+
+        public void DisplayScore(int score, int sec, int kills, int shots) {
+            currentScoreText.text = $"Score: {score} ({sec} sec, {kills} kills, {shots} shots)";
+            ScoreText.text = $"Score: {score}\n" +
+                             $"Time in game: {sec}\n" +
+                             $"Enemies killed: {kills}\n" +
+                             $"Soul shots performed: {shots}";
         }
 
         public void OnRestart() => GameManager.OnRestart();
