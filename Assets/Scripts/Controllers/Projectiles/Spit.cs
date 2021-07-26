@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Controllers.Projectiles {
     public class Spit : Projectile {
+        private GameObject Halo => transform.Find("Halo").gameObject;
+        private GameObject Circle => transform.Find("Circle").gameObject;
+
         [SerializeField] private float slowTimeDistance;
         [SerializeField] private float slowTimeScale;
         [SerializeField] private float slowmoTimeout;
@@ -18,26 +21,30 @@ namespace Controllers.Projectiles {
             _timeAliveLeft = maxTimeAlive;
             Destroy(gameObject, maxTimeAlive);
 
-            CameraScript.Instance.SetTarget(transform, 8, 0.5F);
+            CameraScript.Instance.SetTarget(transform, 14, 0.5F);
             GameManager.Instance.SetTargetForAllEnemies(transform);
         }
 
         protected override void Update() {
             base.Awake();
             _timeAliveLeft -= Time.deltaTime;
-            GetComponent<Light>().intensity = 8;
             GetComponent<Light>().range = 200 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
+            Halo.GetComponent<Light>().range = 10 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
+
+            var list = GameManager.Instance.EnemyList.ToList();
+            list.Sort((x, y) =>
+                Vector3.Distance(x.transform.position, transform.position).CompareTo(
+                    Vector3.Distance(y.transform.position, transform.position)
+                )
+            );
+
+            Circle.GetComponent<SpriteRenderer>().color =
+                list.Count > 0 && Vector3.Distance(list[0].transform.position, transform.position) <= invasionRadius
+                    ? Color.green
+                    : Color.white;
 
             if (Input.GetKeyDown(KeyCode.Mouse1)) {
-                var list = GameManager.Instance.EnemyList.ToList();
-                list.Sort((x, y) =>
-                    Vector3.Distance(x.transform.position, transform.position).CompareTo(
-                        Vector3.Distance(y.transform.position, transform.position)
-                    )
-                );
-
                 Debug.Log(Vector3.Distance(list[0].transform.position, transform.position));
-
                 if (list.Count > 0 &&
                     Vector3.Distance(list[0].transform.position, transform.position) <= invasionRadius) {
                     _killPlayer = false;
