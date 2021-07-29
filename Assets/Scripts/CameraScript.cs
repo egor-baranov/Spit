@@ -38,8 +38,7 @@ public class CameraScript : MonoBehaviour {
 
             transform.position = Vector3.Lerp(
                 transform.position,
-                Fit((_target.position * 7 + mousePosition) / 8 +
-                    _target.GetComponentInParent<Rigidbody>().velocity / 5 -
+                Fit((_target.position * 7 + mousePosition) / 8 -
                     (Input.GetKey(KeyCode.Mouse1) && Player.Instance.CanPerformSoulBlast
                         ? _shootingDistance
                         : _distanceFromTarget) * _zoomCoefficient),
