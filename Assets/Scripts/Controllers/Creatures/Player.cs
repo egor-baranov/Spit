@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Controllers.Projectiles;
 using Core;
+using Unity.Mathematics;
 using UnityEngine;
 using Util.ExtensionMethods;
 using Random = UnityEngine.Random;
@@ -13,7 +14,7 @@ namespace Controllers.Creatures {
 
         public bool IsFreezed { get; private set; }
 
-        public bool CanPerformSoulBlast => _canPerformSoulBlast;
+        public bool CanPerformSoulBlast => canPerformSoulBlast;
 
         public override void ReceiveDamage(float damage) {
             if (_isInvincible) return;
@@ -42,14 +43,15 @@ namespace Controllers.Creatures {
 
         private float _targetCameraHolderAngleX, _targetCameraHolderAngleY;
         private float _targetShadowScale;
+        private float _timeInBody = 2F;
 
-        [SerializeField] private bool _canPerformSoulBlast = true;
-        private bool _canShoot = true, _isInvincible = false, isFaceRight = true;
-        private Quaternion leftRotation, rightRotation;
+        [SerializeField] private bool canPerformSoulBlast = true;
+        private bool _canShoot = true, _isInvincible = false, _isFaceRight = true;
+        private Quaternion _leftRotation, _rightRotation;
 
         private Vector3 _shootDirection;
 
-        public void RechargeSoulBlast() => _canPerformSoulBlast = true;
+        public void RechargeSoulBlast() => canPerformSoulBlast = true;
         private void Recharge() => _canShoot = true;
 
         private void Freeze() {
@@ -88,12 +90,14 @@ namespace Controllers.Creatures {
         }
 
         private void SoulBlast() {
-            if (!_canPerformSoulBlast) return;
+            if (!canPerformSoulBlast || _timeInBody < 2F) return;
 
-            _canPerformSoulBlast = false;
-            Instantiate(spitPrefab, transform.position + _shootDirection.normalized,
-                        Quaternion.identity)
-                    .GetComponent<Rigidbody>().velocity =
+            canPerformSoulBlast = false;
+            var spit = Instantiate(spitPrefab).GetComponent<Spit>();
+            spit.transform.position = transform.position + _shootDirection.normalized * 15;
+            spit.transform.rotation = quaternion.identity;
+            
+            spit.transform.GetComponent<Rigidbody>().velocity =
                 _shootDirection.normalized * spitPrefab.GetComponent<Projectile>().MovementSpeed;
 
             SwapWith(GameManager.Instance.SpawnEnemyAt(transform.position));
@@ -114,14 +118,20 @@ namespace Controllers.Creatures {
                 () => HealthPoints -= 0.5F,
                 () => !IsAlive
             );
+
+            GlobalScope.ExecuteEveryInterval(
+                1F,
+                () => _timeInBody += 1F,
+                () => !IsAlive
+            );
         }
 
         protected override void Start() {
             base.Start();
-            leftRotation = Quaternion.LookRotation(transform.position - CameraScript.Instance.transform.position);
-            rightRotation = Quaternion.LookRotation(CameraScript.Instance.transform.position);
+            _leftRotation = Quaternion.LookRotation(transform.position - CameraScript.Instance.transform.position);
+            _rightRotation = Quaternion.LookRotation(CameraScript.Instance.transform.position);
 
-            Body.transform.rotation = leftRotation;
+            Body.transform.rotation = _leftRotation;
         }
 
         protected override void Update() {
@@ -152,10 +162,12 @@ namespace Controllers.Creatures {
                     100 * Time.deltaTime
                 );
 
-            if (Input.GetKey(KeyCode.Mouse1) && _canPerformSoulBlast) {
+            if (Input.GetKey(KeyCode.Mouse1) && canPerformSoulBlast) {
+                Time.timeScale = 0.6F;
                 DrawLine();
             }
             else {
+                Time.timeScale = 1F;
                 ClearLine();
             }
 
@@ -245,14 +257,19 @@ namespace Controllers.Creatures {
                 return;
             }
 
-            isFaceRight = Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A);
-            Body.transform.rotation = isFaceRight ? leftRotation : leftRotation;
+            _isFaceRight = Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A);
+            Body.transform.rotation = _isFaceRight ? _leftRotation : _leftRotation;
         }
 
         private void OnCollisionEnter(Collision other) {
             if (other.transform.GetComponent<Enemy>()) {
                 ReceiveDamage(1F);
             }
+        }
+
+        protected override void OnSwap() {
+            base.OnSwap();
+            _timeInBody = 0F;
         }
 
         private class MovementState {
