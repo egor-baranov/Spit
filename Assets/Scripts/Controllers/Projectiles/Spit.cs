@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Controllers.Projectiles {
     public class Spit : Projectile {
+        public float InvasionRadius => invasionRadius;
         private GameObject Halo => transform.Find("Halo").gameObject;
         private GameObject Circle => transform.Find("Circle").gameObject;
 
@@ -39,9 +40,15 @@ namespace Controllers.Projectiles {
             );
 
             Circle.GetComponent<SpriteRenderer>().color =
-                list.Count > 0 && Vector3.Distance(list[0].transform.position, transform.position) <= invasionRadius
+                list.Count > 0 && Vector3.Distance(list[0].transform.position,
+                    transform.position) <= invasionRadius
                     ? Color.green
                     : Color.white;
+
+            Time.timeScale =
+                Vector3.Distance(list[0].transform.position, transform.position) <= invasionRadius * 1.3F
+                    ? slowTimeScale
+                    : 1;
 
             if (Input.GetKeyDown(KeyCode.Mouse1)) {
                 Debug.Log(Vector3.Distance(list[0].transform.position, transform.position));
@@ -76,6 +83,7 @@ namespace Controllers.Projectiles {
                 return;
             }
 
+            Time.timeScale = 1;
             CameraScript.Instance.SetTarget(Player.Instance.CameraHolder.transform, 5);
             GameManager.Instance.SetTargetForAllEnemies(Player.Instance.transform);
             Player.Instance.UnFreeze();
