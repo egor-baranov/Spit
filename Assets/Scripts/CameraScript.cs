@@ -49,13 +49,13 @@ public class CameraScript : MonoBehaviour {
         transform.rotation = Quaternion.RotateTowards(
             CameraHolder.transform.rotation,
             Quaternion.Euler(
-                Input.GetKey(KeyCode.Mouse1) && Player.Instance.CanPerformSoulBlast || _target != CameraHolder
+                Input.GetKey(KeyCode.Mouse1) && Player.Instance.CanPerformSoulBlast
                     ? 90
                     : 73,
                 transform.rotation.y,
                 transform.rotation.z
             ),
-            Time.deltaTime
+            Time.fixedDeltaTime * 800
         );
     }
 
