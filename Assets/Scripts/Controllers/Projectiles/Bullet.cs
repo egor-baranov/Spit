@@ -1,4 +1,5 @@
 ﻿using Controllers.Creatures;
+using Controllers.Creatures.Enemies.Base;
 using UnityEngine;
 
 namespace Controllers.Projectiles {
@@ -29,6 +30,18 @@ namespace Controllers.Projectiles {
 
         public Bullet SetSpeedModifier(float speedModifier) {
             movementSpeed *= speedModifier;
+            return this;
+        }
+
+        public Bullet SetScale(float scale) {
+            transform.localScale = Vector3.one * scale;
+            GetComponent<Light>().range *= scale;
+            Halo.GetComponent<Light>().range *= scale;
+            return this;
+        }
+
+        public Bullet SetDamageModifier(float damageModifier) {
+            damage *= damageModifier;
             return this;
         }
 
