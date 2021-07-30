@@ -4,13 +4,13 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Controllers.Creatures.Enemies.Base {
-    public class Enemy : Creature {
-        [SerializeField] protected float changeTarget;
-        [SerializeField] protected float maxDistanceFromPlayer, maxShootDistance;
+    public abstract class Enemy : Creature {
+        public abstract EnemyType Type { get; }
 
+        [SerializeField] protected float maxDistanceFromPlayer, maxShootDistance;
         [SerializeField] protected GameObject bulletPrefab;
 
-        protected bool CanShoot = false;
+        protected bool CanShoot;
         protected Vector3 ShootDirection;
         protected Transform Target;
 
@@ -34,8 +34,6 @@ namespace Controllers.Creatures.Enemies.Base {
         }
 
         protected override void Start() {
-            base.Start();
-
             SetTarget(Player.Instance.transform);
 
             GameManager.Instance.RegisterEnemy(this);
@@ -78,7 +76,7 @@ namespace Controllers.Creatures.Enemies.Base {
         }
 
         public enum EnemyType {
-            Assassin, 
+            Assassin,
             Turret
         }
     }
