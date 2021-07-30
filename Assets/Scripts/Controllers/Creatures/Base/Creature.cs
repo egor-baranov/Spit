@@ -1,7 +1,7 @@
 ﻿using Core;
 using UnityEngine;
 
-namespace Controllers.Creatures {
+namespace Controllers.Creatures.Base {
     public class Creature : MonoBehaviour {
         public float HealthPoints {
             get => _healthPoints;
@@ -20,7 +20,7 @@ namespace Controllers.Creatures {
             set => maxHp = value;
         }
 
-        public GameObject Body => transform.Find("Body").gameObject;
+        public GameObject Body => body;
         protected bool IsAlive => HealthPoints > 0;
         protected BodyIntent Intent => BodyIntent.Create(this);
         private SliderObject HpSlider => Body.transform.Find("HP Slider").GetComponent<SliderObject>();
@@ -28,6 +28,7 @@ namespace Controllers.Creatures {
         private float _healthPoints;
         [SerializeField] protected float maxHp;
         [SerializeField] protected float movementSpeed;
+        [SerializeField] protected GameObject body;
 
         public virtual void ReceiveDamage(float damage) => HealthPoints -= damage;
 
@@ -43,7 +44,8 @@ namespace Controllers.Creatures {
             _healthPoints = intent.HealthPoints;
             maxHp = intent.MaxHealthPoints;
             movementSpeed = intent.MovementSpeed;
-            Body.GetComponent<SpriteRenderer>().sprite = intent.Sprite;
+            body = intent.Body;
+            body.transform.SetParent(transform, false);
             transform.position = intent.Position;
 
             return prevIntent;
@@ -70,7 +72,7 @@ namespace Controllers.Creatures {
             public float HealthPoints { get; }
             public float MaxHealthPoints { get; }
             public float MovementSpeed { get; }
-            public Sprite Sprite { get; }
+            public GameObject Body { get; }
             public Vector3 Position { get; }
 
             public static BodyIntent Create(Creature creature) =>
@@ -78,15 +80,15 @@ namespace Controllers.Creatures {
                     creature.HealthPoints,
                     creature.MaxHp,
                     creature.movementSpeed,
-                    creature.Body.GetComponent<SpriteRenderer>().sprite,
+                    creature.Body,
                     creature.transform.position
                 );
 
-            private BodyIntent(float hp, float maxHp, float movementSpeed, Sprite sprite, Vector3 position) {
+            private BodyIntent(float hp, float maxHp, float movementSpeed, GameObject body, Vector3 position) {
                 HealthPoints = hp;
                 MaxHealthPoints = maxHp;
                 MovementSpeed = movementSpeed;
-                Sprite = sprite;
+                Body = body;
                 Position = position;
             }
         }
