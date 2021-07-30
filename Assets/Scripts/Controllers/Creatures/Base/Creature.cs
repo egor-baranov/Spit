@@ -15,12 +15,9 @@ namespace Controllers.Creatures.Base {
             }
         }
 
-        public float MaxHp {
-            get => maxHp;
-            set => maxHp = value;
-        }
+        public float MaxHp => maxHp;
 
-        public GameObject Body => body;
+        protected GameObject Body => body;
         protected bool IsAlive => HealthPoints > 0;
         protected BodyIntent Intent => BodyIntent.Create(this);
         private SliderObject HpSlider => Body.transform.Find("HP Slider").GetComponent<SliderObject>();
@@ -29,6 +26,8 @@ namespace Controllers.Creatures.Base {
         [SerializeField] protected float maxHp;
         [SerializeField] protected float movementSpeed;
         [SerializeField] protected GameObject body;
+
+        [SerializeField] protected float rechargeTime;
 
         public virtual void ReceiveDamage(float damage) => HealthPoints -= damage;
 
@@ -47,6 +46,7 @@ namespace Controllers.Creatures.Base {
             body = intent.Body;
             body.transform.SetParent(transform, false);
             transform.position = intent.Position;
+            rechargeTime = intent.RechargeTime;
 
             return prevIntent;
         }
@@ -74,6 +74,7 @@ namespace Controllers.Creatures.Base {
             public float MovementSpeed { get; }
             public GameObject Body { get; }
             public Vector3 Position { get; }
+            public float RechargeTime { get; }
 
             public static BodyIntent Create(Creature creature) =>
                 new BodyIntent(
@@ -81,15 +82,17 @@ namespace Controllers.Creatures.Base {
                     creature.MaxHp,
                     creature.movementSpeed,
                     creature.Body,
-                    creature.transform.position
+                    creature.transform.position,
+                    creature.rechargeTime
                 );
 
-            private BodyIntent(float hp, float maxHp, float movementSpeed, GameObject body, Vector3 position) {
+            private BodyIntent(float hp, float maxHp, float movementSpeed, GameObject body, Vector3 position, float rechargeTime) {
                 HealthPoints = hp;
                 MaxHealthPoints = maxHp;
                 MovementSpeed = movementSpeed;
                 Body = body;
                 Position = position;
+                RechargeTime = rechargeTime;
             }
         }
     }
