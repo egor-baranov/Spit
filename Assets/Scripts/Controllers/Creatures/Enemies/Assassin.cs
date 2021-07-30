@@ -6,6 +6,8 @@ using UnityEngine;
 
 namespace Controllers.Creatures.Enemies {
     public class Assassin : Enemy {
+        public override EnemyType Type => EnemyType.Assassin;
+
         public override void SetTarget(Transform target) {
             base.SetTarget(target);
             GetComponent<AIDestinationSetter>().target = target;
@@ -44,8 +46,6 @@ namespace Controllers.Creatures.Enemies {
         }
 
         protected override void Update() {
-            base.Update();
-
             if (Target == null) {
                 Target = Player.Instance.transform;
             }
@@ -72,7 +72,6 @@ namespace Controllers.Creatures.Enemies {
         }
 
         protected override void OnSwap() {
-            base.OnSwap();
             GlobalScope.ExecuteWithDelay(3, UnFreeze, Freeze);
         }
     }

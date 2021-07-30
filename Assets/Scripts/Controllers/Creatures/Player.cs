@@ -54,7 +54,7 @@ namespace Controllers.Creatures {
 
         public void RechargeSoulBlast() => _canPerformSoulBlast = true;
         private void Recharge() => _canShoot = true;
-    
+
         private void Freeze() {
             IsFreezed = true;
             GetComponent<CapsuleCollider>().enabled = false;
@@ -127,9 +127,9 @@ namespace Controllers.Creatures {
             Body.transform.rotation = _defaultRotation;
         }
 
-        protected override void Update() {
-            base.Update();
+        protected override void Start() { }
 
+        protected override void Update() {
             var ray = CameraScript.Instance.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask)) {
                 _shootDirection = raycastHit.point - transform.position;
@@ -146,8 +146,50 @@ namespace Controllers.Creatures {
             }
 
             if (IsAlive && !IsFreezed) {
+                ApplyControls(_appliedEnemyType);
+            }
+        }
+
+        private void ApplyControls(Enemy.EnemyType enemyType) {
+            if (enemyType == Enemy.EnemyType.Assassin) {
                 ApplyAssassinControls();
             }
+            else {
+                ApplyTurretControls();
+            }
+        }
+
+        private void ApplyAssassinControls() {
+            var velocity = MovementState.Create(
+                transform,
+                MovementState.PossibleKeyList.Where(Input.GetKey)
+            ).Direction * movementSpeed;
+
+            if (velocity != Vector3.zero) {
+                GetComponent<Rigidbody>().velocity = velocity;
+            }
+
+            if (Input.GetKey(KeyCode.Mouse0)) {
+                Shoot();
+            }
+
+            if (Input.GetKeyUp(KeyCode.Mouse1)) {
+                SoulBlast();
+            }
+        }
+
+        private void ApplyTurretControls() {
+            body.transform.Find("Center").transform.LookAt(transform.position + _shootDirection * 100);
+        }
+
+        private void OnCollisionEnter(Collision other) {
+            if (other.transform.GetComponent<Enemy>()) {
+                ReceiveDamage(1F);
+            }
+        }
+
+        protected override void OnSwap() {
+            _timeInBody = 0F;
         }
 
         private void DrawLine() {
@@ -189,40 +231,6 @@ namespace Controllers.Creatures {
         private static void ClearLine() {
             var lineRenderer = GameObject.Find("Line Renderer").GetComponent<LineRenderer>();
             lineRenderer.positionCount = 0;
-        }
-
-        private void ApplyAssassinControls() {
-            var velocity = MovementState.Create(
-                transform,
-                MovementState.PossibleKeyList.Where(Input.GetKey)
-            ).Direction * movementSpeed;
-
-            if (velocity != Vector3.zero) {
-                GetComponent<Rigidbody>().velocity = velocity;
-            }
-
-            if (Input.GetKey(KeyCode.Mouse0)) {
-                Shoot();
-            }
-
-            if (Input.GetKeyUp(KeyCode.Mouse1)) {
-                SoulBlast();
-            }
-        }
-
-        private void ApplyTurretControls() {
-            body.transform.Find("Center").transform.LookAt(transform.position + _shootDirection * 100);
-        }
-
-        private void OnCollisionEnter(Collision other) {
-            if (other.transform.GetComponent<Enemy>()) {
-                ReceiveDamage(1F);
-            }
-        }
-
-        protected override void OnSwap() {
-            base.OnSwap();
-            _timeInBody = 0F;
         }
     }
 }

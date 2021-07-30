@@ -1,14 +1,12 @@
-﻿using Controllers.Creatures.Base;
-using Controllers.Creatures.Enemies.Base;
+﻿using Controllers.Creatures.Enemies.Base;
 using Controllers.Projectiles;
-using Core;
 using UnityEngine;
 
 namespace Controllers.Creatures.Enemies {
     public class Turret : Enemy {
-        private Transform Center => body.transform.Find("Center");
-
+        public override EnemyType Type => EnemyType.Turret;
         protected override Vector3 ShootPosition => transform.position + ShootDirection.normalized * 18;
+        private Transform Center => body.transform.Find("Center");
 
         protected override void Shoot() {
             if (!CanShoot) return;
@@ -29,9 +27,10 @@ namespace Controllers.Creatures.Enemies {
         }
 
         protected override void Update() {
-            base.Update();
             Center.transform.LookAt(Target);
             ApplyAutoShooting();
         }
+
+        protected override void OnSwap() { }
     }
 }
