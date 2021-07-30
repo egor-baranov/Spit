@@ -8,7 +8,6 @@ namespace Controllers.Projectiles {
         private GameObject Halo => transform.Find("Halo").gameObject;
         private GameObject Circle => transform.Find("Circle").gameObject;
 
-        [SerializeField] private float slowTimeDistance;
         [SerializeField] private float slowTimeScale;
         [SerializeField] private float slowmoTimeout;
         [SerializeField] private float invasionRadius;
@@ -17,7 +16,6 @@ namespace Controllers.Projectiles {
         private bool _killPlayer = true;
 
         protected override void Awake() {
-            base.Awake();
             _timeAliveLeft = maxTimeAlive;
             Destroy(gameObject, maxTimeAlive);
 
@@ -25,8 +23,9 @@ namespace Controllers.Projectiles {
             GameManager.Instance.SetTargetForAllEnemies(transform);
         }
 
+        protected override void Start() { }
+
         protected override void Update() {
-            base.Awake();
             _timeAliveLeft -= Time.deltaTime;
             GetComponent<Light>().range = 200 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
             Halo.GetComponent<Light>().range = 10 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
@@ -75,8 +74,6 @@ namespace Controllers.Projectiles {
         }
 
         protected override void OnDestroy() {
-            base.OnDestroy();
-
             if (_killPlayer) {
                 Player.Instance.HealthPoints = 0;
                 return;

@@ -73,5 +73,13 @@ namespace Controllers.Projectiles {
             Player,
             Everything
         }
+
+        protected override void Awake() { }
+
+        protected override void Start() { }
+
+        protected override void Update() { }
+
+        protected override void OnDestroy() { }
     }
 }
