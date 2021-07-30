@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Controllers;
-using Controllers.Creatures;
+﻿using Controllers.Creatures.Base;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class SliderObject : MonoBehaviour {
     public float Value {
@@ -38,6 +33,8 @@ public class SliderObject : MonoBehaviour {
 
     private void Update() {
         MinValue = 0;
+        if (transform.parent.parent == null) return;
+        
         MaxValue = Creature.MaxHp;
         Value = Creature.HealthPoints;
     }

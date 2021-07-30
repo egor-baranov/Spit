@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Controllers.Creatures;
+using Controllers.Creatures.Enemies.Base;
 using Core.Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,7 +16,7 @@ namespace Core {
 
         public IEnumerable<Enemy> EnemyList => _enemyList;
 
-        [SerializeField] private GameObject enemyPrefab;
+        [SerializeField] private GameObject assassinPrefab, turretPrefab;
         [SerializeField] private int spawnEnemyCount;
 
         private readonly List<Enemy> _enemyList = new List<Enemy>();
@@ -29,11 +29,14 @@ namespace Core {
         public static void OnRestart() => SceneManager.LoadScene("Prototype");
 
         public Enemy SpawnEnemyAt(Vector3 position) =>
-            Instantiate(enemyPrefab, position, Quaternion.identity).GetComponent<Enemy>();
+            Instantiate(GetRandomEnemyPrefab(), position, Quaternion.identity).GetComponent<Enemy>();
+
+        public Enemy SpawnEnemyAt(Vector3 position, Enemy.EnemyType enemyType) =>
+            Instantiate(GetEnemyWithType(enemyType), position, Quaternion.identity).GetComponent<Enemy>();
 
         public void SpawnEnemies(int count) => 0.Until(count).ToList().ForEach(it =>
             Instantiate(
-                enemyPrefab,
+                GetRandomEnemyPrefab(),
                 new Vector3(Random.Range(-200, 200), 6, Random.Range(-200, 200)),
                 Quaternion.identity
             )
@@ -61,6 +64,20 @@ namespace Core {
                     (int) Time.timeSinceLevelLoad * (soulShotCount + 1) * (killedEnemiesCount + 1),
                     (int) Time.timeSinceLevelLoad, killedEnemiesCount, soulShotCount
                 );
+            }
+        }
+
+        private GameObject GetRandomEnemyPrefab() =>
+            new List<GameObject> {assassinPrefab, turretPrefab}.RandomElement();
+
+        private GameObject GetEnemyWithType(Enemy.EnemyType enemyType) {
+            switch (enemyType) {
+                case Enemy.EnemyType.Assassin:
+                    return assassinPrefab;
+                case Enemy.EnemyType.Turret:
+                    return turretPrefab;
+                default:
+                    return turretPrefab;
             }
         }
     }
