@@ -7,6 +7,7 @@ using Controllers.Projectiles;
 using Core;
 using Unity.Mathematics;
 using UnityEngine;
+using Util.Classes;
 using Util.ExtensionMethods;
 using Random = UnityEngine.Random;
 
@@ -14,15 +15,17 @@ namespace Controllers.Creatures {
     public class Player : Creature {
         public static Player Instance { get; private set; }
 
-        public bool IsFreezed { get; private set; }
+        public bool CanPerformSoulBlast => _canPerformSoulBlast;
 
-        public bool CanPerformSoulBlast => canPerformSoulBlast;
+        public Quaternion DefaultRotation => _defaultRotation;
 
         public override void ReceiveDamage(float damage) {
             if (_isInvincible) return;
             GetComponent<Animator>().Play("Receive Damage");
+
             base.ReceiveDamage(damage);
             _isInvincible = true;
+
             GlobalScope.ExecuteWithDelay(3, () => {
                 _isInvincible = false;
                 GetComponent<Animator>().Play("Idle");
@@ -30,42 +33,36 @@ namespace Controllers.Creatures {
         }
 
         public GameObject CameraHolder => transform.Find("Camera Holder").gameObject;
-        private GameObject Shadow => transform.Find("Shadow").gameObject;
-        private GameObject Highlight => transform.Find("Highlight").gameObject;
+        private bool IsFreezed { get; set; }
 
-        [SerializeField] private float rotationSpeed;
-        [SerializeField] private float rechargeTime;
+
         [SerializeField] private float shotCost;
 
         [SerializeField] private LayerMask layerMask, wallLayerMask;
 
         [SerializeField] private GameObject spitPrefab;
         [SerializeField] private GameObject bulletPrefab;
-        [SerializeField] private float cameraAngle;
 
-        private float _targetCameraHolderAngleX, _targetCameraHolderAngleY;
-        private float _targetShadowScale;
         private float _timeInBody = 2F;
+        private Enemy.EnemyType _appliedEnemyType = Enemy.EnemyType.Assassin;
 
-        [SerializeField] private bool canPerformSoulBlast = true;
-        private bool _canShoot = true, _isInvincible = false, _isFaceRight = true;
-        private Quaternion _leftRotation, _rightRotation;
+        private bool _canPerformSoulBlast = true;
+        private bool _canShoot = true, _isInvincible;
+        private Quaternion _defaultRotation;
 
         private Vector3 _shootDirection;
 
-        public void RechargeSoulBlast() => canPerformSoulBlast = true;
+        public void RechargeSoulBlast() => _canPerformSoulBlast = true;
         private void Recharge() => _canShoot = true;
-
+    
         private void Freeze() {
             IsFreezed = true;
-            // Body.SetActive(false);
             GetComponent<CapsuleCollider>().enabled = false;
         }
 
         public void UnFreeze() {
             IsFreezed = false;
             GetComponent<CapsuleCollider>().enabled = true;
-            // Body.SetActive(true);
         }
 
         private void Shoot() {
@@ -92,14 +89,14 @@ namespace Controllers.Creatures {
         }
 
         private void SoulBlast() {
-            if (!canPerformSoulBlast || _timeInBody < 2F) return;
+            if (!_canPerformSoulBlast || _timeInBody < 2F) return;
 
-            canPerformSoulBlast = false;
-            var spit = Instantiate(spitPrefab).GetComponent<Spit>();
-            spit.transform.position = transform.position + _shootDirection.normalized * 15;
-            spit.transform.rotation = quaternion.identity;
+            _canPerformSoulBlast = false;
+            var spit = Instantiate(spitPrefab).GetComponent<Spit>().transform;
+            spit.position = transform.position + _shootDirection.normalized * 15;
+            spit.rotation = quaternion.identity;
 
-            spit.transform.GetComponent<Rigidbody>().velocity =
+            spit.GetComponent<Rigidbody>().velocity =
                 _shootDirection.normalized * spitPrefab.GetComponent<Projectile>().MovementSpeed;
 
             SwapWith(GameManager.Instance.SpawnEnemyAt(transform.position, Enemy.EnemyType.Assassin));
@@ -113,7 +110,6 @@ namespace Controllers.Creatures {
             }
 
             Instance = this;
-            _targetCameraHolderAngleX = cameraAngle;
 
             GlobalScope.ExecuteEveryInterval(
                 1F,
@@ -127,41 +123,20 @@ namespace Controllers.Creatures {
                 () => !IsAlive
             );
 
-            _leftRotation = Quaternion.LookRotation(transform.position - CameraScript.Instance.transform.position);
-            _rightRotation = Quaternion.LookRotation(CameraScript.Instance.transform.position);
-
-            Body.transform.rotation = _leftRotation;
+            _defaultRotation = Quaternion.LookRotation(transform.position - CameraScript.Instance.transform.position);
+            Body.transform.rotation = _defaultRotation;
         }
 
         protected override void Update() {
             base.Update();
 
-            Shadow.transform.localScale = Vector3.Lerp(
-                Shadow.transform.localScale,
-                Vector3.one * _targetShadowScale,
-                10 * Time.deltaTime
-            );
-
             var ray = CameraScript.Instance.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask)) {
-                Shadow.transform.LookAt(raycastHit.point);
-                Shadow.transform.rotation = Quaternion.Euler(90F, Shadow.transform.rotation.eulerAngles.y, 0F);
                 _shootDirection = raycastHit.point - transform.position;
                 _shootDirection = new Vector3(_shootDirection.x, 0F, _shootDirection.z).normalized;
             }
 
-            CameraHolder.transform.rotation =
-                Quaternion.RotateTowards(
-                    CameraHolder.transform.rotation,
-                    Quaternion.Euler(
-                        _targetCameraHolderAngleX,
-                        _targetCameraHolderAngleY,
-                        CameraHolder.transform.rotation.z
-                    ),
-                    100 * Time.deltaTime
-                );
-
-            if (Input.GetKey(KeyCode.Mouse1) && canPerformSoulBlast) {
+            if (Input.GetKey(KeyCode.Mouse1) && _canPerformSoulBlast) {
                 Time.timeScale = 0.6F;
                 DrawLine();
             }
@@ -171,7 +146,7 @@ namespace Controllers.Creatures {
             }
 
             if (IsAlive && !IsFreezed) {
-                PerformControls();
+                ApplyAssassinControls();
             }
         }
 
@@ -180,51 +155,34 @@ namespace Controllers.Creatures {
             lineRenderer.positionCount = 2;
 
             var maxLineLength = 500F;
-            var positionList = new List<Vector3>();
-            var skipPoint = new List<bool>();
+            var positionList = new List<Vector3> {transform.position + _shootDirection.normalized * 10};
             var direction = _shootDirection;
-            positionList.Add(transform.position + _shootDirection.normalized * 10);
-            skipPoint.Add(false);
+
             while (maxLineLength > 0) {
-                if (Physics.Raycast(
-                    new Ray(positionList[0.Until(positionList.Count).Last(it => !skipPoint[it])], direction),
+                if (!Physics.Raycast(
+                    new Ray(positionList.LastElement(), direction),
                     out RaycastHit raycastHit,
                     maxLineLength, wallLayerMask)) {
-                    if (raycastHit.transform.CompareTag("Enemy")) {
-                        positionList.Add(raycastHit.point);
-                        skipPoint.Add(false);
-                        break;
-                    }
-
-                    maxLineLength -=
-                        Vector3.Distance(positionList[0.Until(positionList.Count).Last(it => !skipPoint[it])],
-                            raycastHit.point
-                        );
-
-                    if (raycastHit.transform.CompareTag("Wall")) {
-                        direction = Vector3.Reflect(direction, raycastHit.normal);
-                        skipPoint.Add(false);
-                        positionList.Add(raycastHit.point);
-                    }
-                    else {
-                        skipPoint.Add(true);
-                        positionList.Add(raycastHit.point + direction.normalized * 30);
-                    }
-                }
-                else {
                     break;
                 }
+
+                if (raycastHit.transform.CompareTag("Enemy")) {
+                    positionList.Add(raycastHit.point);
+                    break;
+                }
+
+                maxLineLength -= Vector3.Distance(positionList.LastElement(), raycastHit.point);
+                direction = Vector3.Reflect(direction, raycastHit.normal);
+                positionList.Add(raycastHit.point);
             }
 
             if (maxLineLength > 0) {
                 positionList.Add(positionList.LastElement() + direction.normalized * maxLineLength);
-                skipPoint.Add(false);
             }
 
-            var pointIndexList = 0.Until(positionList.Count).Where(it => !skipPoint[it]).ToList();
-            lineRenderer.positionCount = pointIndexList.Count;
-            foreach (var i in 0.Until(pointIndexList.Count)) {
-                lineRenderer.SetPosition(i, positionList[pointIndexList[i]]);
+            lineRenderer.positionCount = positionList.Count;
+            foreach (var i in 0.Until(positionList.Count)) {
+                lineRenderer.SetPosition(i, positionList[i]);
             }
         }
 
@@ -233,12 +191,11 @@ namespace Controllers.Creatures {
             lineRenderer.positionCount = 0;
         }
 
-        private void PerformControls() {
-            var velocity =
-                MovementState.Create(
-                    transform,
-                    MovementState.PossibleKeyList.Where(Input.GetKey)
-                ).Direction * movementSpeed;
+        private void ApplyAssassinControls() {
+            var velocity = MovementState.Create(
+                transform,
+                MovementState.PossibleKeyList.Where(Input.GetKey)
+            ).Direction * movementSpeed;
 
             if (velocity != Vector3.zero) {
                 GetComponent<Rigidbody>().velocity = velocity;
@@ -251,13 +208,10 @@ namespace Controllers.Creatures {
             if (Input.GetKeyUp(KeyCode.Mouse1)) {
                 SoulBlast();
             }
+        }
 
-            if (!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A)) {
-                return;
-            }
-
-            _isFaceRight = Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A);
-            Body.transform.rotation = _isFaceRight ? _leftRotation : _leftRotation;
+        private void ApplyTurretControls() {
+            body.transform.Find("Center").transform.LookAt(transform.position + _shootDirection * 100);
         }
 
         private void OnCollisionEnter(Collision other) {
@@ -269,49 +223,6 @@ namespace Controllers.Creatures {
         protected override void OnSwap() {
             base.OnSwap();
             _timeInBody = 0F;
-        }
-
-        private class MovementState {
-            public static readonly List<KeyCode> PossibleKeyList =
-                new List<KeyCode> {KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D};
-
-            public List<KeyCode> KeyCodeList => _keyCodeList;
-            public Vector3 Direction => _direction;
-
-            private readonly Transform _transform;
-            private readonly List<KeyCode> _keyCodeList;
-            private readonly Vector3 _direction;
-
-            private MovementState(Transform transform, List<KeyCode> keyCodeList, Vector3 direction) {
-                _transform = transform;
-                _keyCodeList = keyCodeList;
-                _direction = direction;
-            }
-
-            private static Vector3 GetDirectionFromKey(Transform transform, KeyCode keyCode) {
-                switch (keyCode) {
-                    case KeyCode.W: return transform.forward;
-                    case KeyCode.A: return -transform.right;
-                    case KeyCode.S: return -transform.forward;
-                    case KeyCode.D: return transform.right;
-                    default: throw new InvalidDataException();
-                }
-            }
-
-            public static MovementState Create(Transform transform, params KeyCode[] keyCodes) =>
-                Create(transform, keyCodes.ToList());
-
-            public static MovementState Create(Transform transform, IEnumerable<KeyCode> keyCodes) {
-                var keyList = keyCodes.Where(it => PossibleKeyList.Contains(it)).ToList();
-                var result = Vector3.zero;
-                keyList.ForEach(keyCode => result += GetDirectionFromKey(transform, keyCode));
-
-                if (result.sqrMagnitude > 1) {
-                    result = result.normalized * 0.75F;
-                }
-
-                return new MovementState(transform, keyList, result);
-            }
         }
     }
 }
