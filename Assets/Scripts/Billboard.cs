@@ -7,7 +7,7 @@ public class Billboard : MonoBehaviour {
 
     private void Start() {
         if (shouldRotate) {
-            transform.rotation = Player.Instance.Body.transform.rotation;
+            transform.rotation = Player.Instance.DefaultRotation;
         }
     }
 }
