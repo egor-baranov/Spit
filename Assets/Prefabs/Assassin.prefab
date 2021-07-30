@@ -1,49 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4080408996284258189
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6944552398026507512}
-  - component: {fileID: 314099463925543029}
-  m_Layer: 11
-  m_Name: Graph Collider
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6944552398026507512
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4080408996284258189}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 7618548787555989892}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &314099463925543029
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4080408996284258189}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: 50, y: 15.95059, z: 50}
-  m_Center: {x: -0.7234154, y: 0, z: 0}
 --- !u!1 &7618548785929798031
 GameObject:
   m_ObjectHideFlags: 0
@@ -54,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7618548785929798016}
   - component: {fileID: 7618548785929798017}
-  - component: {fileID: 7618548785929798030}
   - component: {fileID: 7939978426748255881}
+  - component: {fileID: 6334290837361933580}
   m_Layer: 11
   m_Name: Body
   m_TagString: Playable
@@ -128,19 +84,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &7618548785929798030
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7618548785929798031}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6881751ae06c4458b4cdef9907eff6b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shouldRotate: 1
 --- !u!114 &7939978426748255881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,6 +99,19 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 3, y: 24}
   m_UseGraphicAlpha: 1
+--- !u!114 &6334290837361933580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7618548785929798031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6881751ae06c4458b4cdef9907eff6b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shouldRotate: 1
 --- !u!1 &7618548787555989890
 GameObject:
   m_ObjectHideFlags: 0
@@ -165,7 +121,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7618548787555989892}
-  - component: {fileID: 7618548787555989893}
+  - component: {fileID: 6812295236849930285}
   - component: {fileID: 7618548787555989895}
   - component: {fileID: 7884931354349119583}
   - component: {fileID: 5146669087533575756}
@@ -174,8 +130,8 @@ GameObject:
   - component: {fileID: -7286561217251123721}
   - component: {fileID: 2505011983694240835}
   m_Layer: 11
-  m_Name: Enemy
-  m_TagString: Enemy
+  m_Name: Assassin
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -192,11 +148,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7618548785929798016}
-  - {fileID: 6944552398026507512}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7618548787555989893
+--- !u!114 &6812295236849930285
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -205,11 +160,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7618548787555989890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8757d2ff48674a09994978762619567a, type: 3}
+  m_Script: {fileID: 11500000, guid: 4a94675d85b8418cb2527d74449a2f48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maxHp: 25
   movementSpeed: 200
+  body: {fileID: 7618548785929798031}
   changeTarget: 3
   maxDistanceFromPlayer: 300
   maxShootDistance: 75
