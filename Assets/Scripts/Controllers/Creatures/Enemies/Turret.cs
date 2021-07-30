@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace Controllers.Creatures.Enemies {
     public class Turret : Enemy {
-        private Transform Center => transform.Find("Center");
+        private Transform Center => body.transform.Find("Center");
 
-        protected override Vector3 ShootPosition => transform.position + _shootDirection.normalized * 18;
+        protected override Vector3 ShootPosition => transform.position + ShootDirection.normalized * 18;
 
         protected override void Shoot() {
             if (!CanShoot) return;
@@ -24,7 +24,7 @@ namespace Controllers.Creatures.Enemies {
                 .SetScale(0.6F);
 
             bullet.gameObject.GetComponent<Rigidbody>().velocity =
-                Quaternion.AngleAxis(Random.Range(-10F, 10F), Vector3.up) * _shootDirection.normalized *
+                Quaternion.AngleAxis(Random.Range(-10F, 10F), Vector3.up) * ShootDirection.normalized *
                 bullet.GetComponent<Projectile>().MovementSpeed;
         }
 

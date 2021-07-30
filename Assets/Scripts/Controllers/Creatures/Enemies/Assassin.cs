@@ -22,7 +22,7 @@ namespace Controllers.Creatures.Enemies {
                 .SetModifiers(enemyModifier: 0.5F);
 
             bullet.gameObject.GetComponent<Rigidbody>().velocity =
-                _shootDirection.normalized * bullet.GetComponent<Projectile>().MovementSpeed;
+                ShootDirection.normalized * bullet.GetComponent<Projectile>().MovementSpeed;
         }
 
         private void Freeze() => GetComponent<AIPath>().enabled = false;
@@ -61,9 +61,8 @@ namespace Controllers.Creatures.Enemies {
             }
 
             if (Vector3.Distance(transform.position, Target.position) <= maxShootDistance) {
-                // we cah shoot
-                _shootDirection = Target.position - transform.position;
-                _shootDirection = new Vector3(_shootDirection.x, 0, _shootDirection.z);
+                ShootDirection = Target.position - transform.position;
+                ShootDirection = new Vector3(ShootDirection.x, 0, ShootDirection.z);
                 Shoot();
                 Freeze();
             }
