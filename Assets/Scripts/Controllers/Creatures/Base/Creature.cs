@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace Controllers.Creatures.Base {
-    public class Creature : MonoBehaviour {
+    public abstract class Creature : MonoBehaviour {
         public float HealthPoints {
             get => _healthPoints;
             set {
@@ -53,9 +53,9 @@ namespace Controllers.Creatures.Base {
 
         protected virtual void Awake() => HealthPoints = maxHp;
 
-        protected virtual void Start() { }
+        protected abstract void Start();
 
-        protected virtual void Update() { }
+        protected abstract void Update();
 
         protected virtual void OnDeath() {
             if (Player.Instance == this) {
@@ -66,7 +66,7 @@ namespace Controllers.Creatures.Base {
             }
         }
 
-        protected virtual void OnSwap() { }
+        protected abstract void OnSwap();
 
         protected class BodyIntent {
             public float HealthPoints { get; }
