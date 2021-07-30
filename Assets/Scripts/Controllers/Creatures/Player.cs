@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Controllers.Creatures.Base;
+using Controllers.Creatures.Enemies.Base;
 using Controllers.Projectiles;
 using Core;
 using Unity.Mathematics;
@@ -56,14 +58,14 @@ namespace Controllers.Creatures {
 
         private void Freeze() {
             IsFreezed = true;
-            Body.SetActive(false);
+            // Body.SetActive(false);
             GetComponent<CapsuleCollider>().enabled = false;
         }
 
         public void UnFreeze() {
             IsFreezed = false;
             GetComponent<CapsuleCollider>().enabled = true;
-            Body.SetActive(true);
+            // Body.SetActive(true);
         }
 
         private void Shoot() {
@@ -96,11 +98,11 @@ namespace Controllers.Creatures {
             var spit = Instantiate(spitPrefab).GetComponent<Spit>();
             spit.transform.position = transform.position + _shootDirection.normalized * 15;
             spit.transform.rotation = quaternion.identity;
-            
+
             spit.transform.GetComponent<Rigidbody>().velocity =
                 _shootDirection.normalized * spitPrefab.GetComponent<Projectile>().MovementSpeed;
 
-            SwapWith(GameManager.Instance.SpawnEnemyAt(transform.position));
+            SwapWith(GameManager.Instance.SpawnEnemyAt(transform.position, Enemy.EnemyType.Assassin));
             Freeze();
         }
 
@@ -124,10 +126,7 @@ namespace Controllers.Creatures {
                 () => _timeInBody += 1F,
                 () => !IsAlive
             );
-        }
 
-        protected override void Start() {
-            base.Start();
             _leftRotation = Quaternion.LookRotation(transform.position - CameraScript.Instance.transform.position);
             _rightRotation = Quaternion.LookRotation(CameraScript.Instance.transform.position);
 
@@ -180,7 +179,7 @@ namespace Controllers.Creatures {
             var lineRenderer = GameObject.Find("Line Renderer").GetComponent<LineRenderer>();
             lineRenderer.positionCount = 2;
 
-            var maxLineLength = 650F;
+            var maxLineLength = 500F;
             var positionList = new List<Vector3>();
             var skipPoint = new List<bool>();
             var direction = _shootDirection;
@@ -229,7 +228,7 @@ namespace Controllers.Creatures {
             }
         }
 
-        private void ClearLine() {
+        private static void ClearLine() {
             var lineRenderer = GameObject.Find("Line Renderer").GetComponent<LineRenderer>();
             lineRenderer.positionCount = 0;
         }
