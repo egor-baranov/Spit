@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Controllers.Projectiles {
     public class Spit : Projectile {
-        public float InvasionRadius => invasionRadius;
         private GameObject Halo => transform.Find("Halo").gameObject;
         private GameObject Circle => transform.Find("Circle").gameObject;
 
