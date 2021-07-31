@@ -28,7 +28,8 @@ namespace Controllers.Creatures.Base {
         [SerializeField] protected GameObject body;
 
         [SerializeField] protected float rechargeTime;
-
+        [SerializeField] protected float specialAbilityCooldown;
+ 
         public virtual void ReceiveDamage(float damage) {
             HealthPoints -= damage;
             OnReceiveDamage();
@@ -49,6 +50,7 @@ namespace Controllers.Creatures.Base {
             body = intent.Body;
             body.transform.SetParent(transform, false);
             transform.position = intent.Position;
+            specialAbilityCooldown = intent.SpecialAbilityCooldown;
 
             return prevIntent;
         }
@@ -77,23 +79,26 @@ namespace Controllers.Creatures.Base {
             public float MovementSpeed { get; }
             public GameObject Body { get; }
             public Vector3 Position { get; }
-            
+            public float SpecialAbilityCooldown { get;  }
+
             public static BodyIntent Create(Creature creature) =>
                 new BodyIntent(
                     creature.HealthPoints,
                     creature.MaxHp,
                     creature.movementSpeed,
                     creature.Body,
-                    creature.transform.position
+                    creature.transform.position,
+                    creature.specialAbilityCooldown
                 );
 
             private BodyIntent(float hp, float maxHp, float movementSpeed,
-                GameObject body, Vector3 position) {
+                GameObject body, Vector3 position, float specialAbilityCooldown) {
                 HealthPoints = hp;
                 MaxHealthPoints = maxHp;
                 MovementSpeed = movementSpeed;
                 Body = body;
                 Position = position;
+                SpecialAbilityCooldown = specialAbilityCooldown;
             }
         }
     }
