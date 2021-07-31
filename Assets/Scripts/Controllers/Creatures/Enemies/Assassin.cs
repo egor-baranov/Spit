@@ -1,5 +1,7 @@
-﻿using Controllers.Creatures.Enemies.Base;
+﻿using Controllers.Creatures.Base;
+using Controllers.Creatures.Enemies.Base;
 using Controllers.Projectiles;
+using Controllers.Projectiles.Base;
 using Core;
 using Pathfinding;
 using UnityEngine;
@@ -7,6 +9,11 @@ using UnityEngine;
 namespace Controllers.Creatures.Enemies {
     public class Assassin : Enemy {
         public override EnemyType Type => EnemyType.Assassin;
+
+        public override Bullet.Builder BulletBuilder(Vector3 bulletPosition) =>
+            new Bullet.Builder(
+                Instantiate(bulletPrefab, bulletPosition, Quaternion.identity).GetComponent<Bullet>()
+            );
 
         public override void SetTarget(Transform target) {
             base.SetTarget(target);
@@ -17,11 +24,11 @@ namespace Controllers.Creatures.Enemies {
             if (!CanShoot) return;
             base.Shoot();
 
-            var bullet = Instantiate(bulletPrefab, ShootPosition, Quaternion.identity)
-                .GetComponent<Bullet>()
+            var bullet = BulletBuilder(ShootPosition)
                 .SetTarget(Bullet.BulletTarget.Everything)
                 .SetColor(Color.green)
-                .SetModifiers(enemyModifier: 0.5F);
+                .SetModifiers(enemyModifier: 0.5F)
+                .Result();
 
             bullet.gameObject.GetComponent<Rigidbody>().velocity =
                 ShootDirection.normalized * bullet.GetComponent<Projectile>().MovementSpeed;
@@ -71,7 +78,7 @@ namespace Controllers.Creatures.Enemies {
             }
         }
 
-        protected override void OnSwap() {
+        protected override void OnSwap(Creature other) {
             GlobalScope.ExecuteWithDelay(3, UnFreeze, Freeze);
         }
     }
