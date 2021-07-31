@@ -1,4 +1,6 @@
-﻿using Controllers.Creatures.Base;
+﻿using Controllers.Animation;
+using Controllers.Creatures.Base;
+using Controllers.Projectiles;
 using Core;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -6,6 +8,7 @@ using Random = UnityEngine.Random;
 namespace Controllers.Creatures.Enemies.Base {
     public abstract class Enemy : Creature {
         public abstract EnemyType Type { get; }
+        public abstract Bullet.Builder BulletBuilder(Vector3 bulletPosition);
 
         [SerializeField] protected float maxDistanceFromPlayer, maxShootDistance;
         [SerializeField] protected GameObject bulletPrefab;
@@ -49,6 +52,11 @@ namespace Controllers.Creatures.Enemies.Base {
             GameManager.Instance.RemoveEnemy(this);
             GameManager.Instance.SpawnEnemies(2);
             GameManager.killedEnemiesCount += 1;
+        }
+
+        protected override void OnReceiveDamage() {
+            Body.GetComponent<CreatureAnimationController>()?
+                .SetColor(new Color(0.4F, 1F, 0.4F, 1F), 2);
         }
 
         protected void ApplyAutoShooting() {
