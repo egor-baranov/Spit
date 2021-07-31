@@ -29,12 +29,15 @@ namespace Controllers.Creatures.Base {
 
         [SerializeField] protected float rechargeTime;
 
-        public virtual void ReceiveDamage(float damage) => HealthPoints -= damage;
+        public virtual void ReceiveDamage(float damage) {
+            HealthPoints -= damage;
+            OnReceiveDamage();
+        }
 
         public void SwapWith(Creature other) {
             AcceptIntent(other.AcceptIntent(Intent));
-            OnSwap();
-            other.OnSwap();
+            OnSwap(other);
+            other.OnSwap(this);
         }
 
         protected BodyIntent AcceptIntent(BodyIntent intent) {
@@ -46,7 +49,6 @@ namespace Controllers.Creatures.Base {
             body = intent.Body;
             body.transform.SetParent(transform, false);
             transform.position = intent.Position;
-            rechargeTime = intent.RechargeTime;
 
             return prevIntent;
         }
@@ -66,7 +68,8 @@ namespace Controllers.Creatures.Base {
             }
         }
 
-        protected abstract void OnSwap();
+        protected abstract void OnSwap(Creature other);
+        protected abstract void OnReceiveDamage();
 
         protected class BodyIntent {
             public float HealthPoints { get; }
@@ -74,25 +77,23 @@ namespace Controllers.Creatures.Base {
             public float MovementSpeed { get; }
             public GameObject Body { get; }
             public Vector3 Position { get; }
-            public float RechargeTime { get; }
-
+            
             public static BodyIntent Create(Creature creature) =>
                 new BodyIntent(
                     creature.HealthPoints,
                     creature.MaxHp,
                     creature.movementSpeed,
                     creature.Body,
-                    creature.transform.position,
-                    creature.rechargeTime
+                    creature.transform.position
                 );
 
-            private BodyIntent(float hp, float maxHp, float movementSpeed, GameObject body, Vector3 position, float rechargeTime) {
+            private BodyIntent(float hp, float maxHp, float movementSpeed,
+                GameObject body, Vector3 position) {
                 HealthPoints = hp;
                 MaxHealthPoints = maxHp;
                 MovementSpeed = movementSpeed;
                 Body = body;
                 Position = position;
-                RechargeTime = rechargeTime;
             }
         }
     }
