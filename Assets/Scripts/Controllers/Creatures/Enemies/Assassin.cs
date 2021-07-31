@@ -62,9 +62,9 @@ namespace Controllers.Creatures.Enemies {
                 return;
             }
 
-            if (!Physics.SphereCast(ShootPosition, 10, Target.position, out var hit)) {
+            if (!Physics.SphereCast(ShootPosition, 10, Target.position, out var hit) ||
+                !hit.collider.gameObject.GetComponent<Player>()) {
                 UnFreeze();
-                return;
             }
 
             if (Vector3.Distance(transform.position, Target.position) <= maxShootDistance) {
