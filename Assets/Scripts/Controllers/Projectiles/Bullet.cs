@@ -1,5 +1,6 @@
 ﻿using Controllers.Creatures;
 using Controllers.Creatures.Enemies.Base;
+using Controllers.Projectiles.Base;
 using UnityEngine;
 
 namespace Controllers.Projectiles {
@@ -11,58 +12,17 @@ namespace Controllers.Projectiles {
 
         private GameObject Halo => transform.Find("Halo").gameObject;
 
-        public Bullet SetColor(Color color) {
-            GetComponent<Light>().color = color;
-            Halo.GetComponent<Light>().color = color;
-            return this;
-        }
-
-        public Bullet SetTarget(BulletTarget target) {
-            _target = target;
-            return this;
-        }
-
-        public Bullet SetModifiers(float playerModifier = 1F, float enemyModifier = 1F) {
-            _playerModifier = playerModifier;
-            _enemyModifier = enemyModifier;
-            return this;
-        }
-
-        public Bullet SetSpeedModifier(float speedModifier) {
-            movementSpeed *= speedModifier;
-            return this;
-        }
-
-        public Bullet SetScale(float scale) {
-            transform.localScale = Vector3.one * scale;
-            GetComponent<Light>().range *= scale;
-            Halo.GetComponent<Light>().range *= scale;
-            return this;
-        }
-
-        public Bullet SetDamageModifier(float damageModifier) {
-            damage *= damageModifier;
-            return this;
-        }
-
         private void OnTriggerEnter(Collider other) {
             if (other.GetComponent<Bullet>()) {
                 return;
             }
 
-            var enemy = other.GetComponent<Enemy>();
-            var player = other.GetComponent<Player>();
-
-            if (_target == BulletTarget.Enemy && player != null || _target == BulletTarget.Player && enemy != null) {
-                return;
+            if (_target == BulletTarget.Enemy || _target == BulletTarget.Everything) {
+                other.GetComponent<Enemy>()?.ReceiveDamage(damage * _enemyModifier);
             }
 
-            if ((_target == BulletTarget.Enemy || _target == BulletTarget.Everything) && enemy != null) {
-                enemy.ReceiveDamage(damage * _enemyModifier);
-            }
-
-            if ((_target == BulletTarget.Player || _target == BulletTarget.Everything) && player != null) {
-                player.ReceiveDamage(damage * _playerModifier);
+            if (_target == BulletTarget.Player || _target == BulletTarget.Everything) {
+                other.GetComponent<Player>()?.ReceiveDamage(damage * _playerModifier);
             }
 
             Destroy(gameObject);
@@ -81,5 +41,46 @@ namespace Controllers.Projectiles {
         protected override void Update() { }
 
         protected override void OnDestroy() { }
+
+        public class Builder {
+            private readonly Bullet _bullet;
+            public Builder(Bullet bullet) => _bullet = bullet;
+
+            public Builder SetColor(Color color) {
+                _bullet.GetComponent<Light>().color = color;
+                _bullet.Halo.GetComponent<Light>().color = color;
+                return this;
+            }
+
+            public Builder SetTarget(BulletTarget bulletTarget) {
+                _bullet._target = bulletTarget;
+                return this;
+            }
+
+            public Builder SetModifiers(float playerModifier = 1F, float enemyModifier = 1F) {
+                _bullet._playerModifier = playerModifier;
+                _bullet._enemyModifier = enemyModifier;
+                return this;
+            }
+            
+            public Builder SetSpeedModifier(float speedModifier) {
+                _bullet.movementSpeed *= speedModifier;
+                return this;
+            }
+
+            public Builder SetScale(float scale) {
+                _bullet.transform.localScale = Vector3.one * scale;
+                _bullet.GetComponent<Light>().range *= scale;
+                _bullet.Halo.GetComponent<Light>().range *= scale;
+                return this;
+            }
+
+            public Builder SetDamageModifier(float damageModifier) {
+                _bullet.damage *= damageModifier;
+                return this;
+            }
+
+            public Bullet Result() => _bullet;
+        }
     }
 }
