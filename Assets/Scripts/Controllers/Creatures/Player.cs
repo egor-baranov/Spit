@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Controllers.Animation;
 using Controllers.Creatures.Base;
 using Controllers.Creatures.Enemies.Base;
 using Controllers.Projectiles;
+using Controllers.Projectiles.Base;
 using Core;
 using Unity.Mathematics;
 using UnityEngine;
@@ -14,10 +16,9 @@ using Random = UnityEngine.Random;
 namespace Controllers.Creatures {
     public class Player : Creature {
         public static Player Instance { get; private set; }
+        public bool CanPerformSoulBlast { get; private set; } = true;
 
-        public bool CanPerformSoulBlast => _canPerformSoulBlast;
-
-        public Quaternion DefaultRotation => _defaultRotation;
+        public Quaternion DefaultRotation { get; private set; }
 
         public override void ReceiveDamage(float damage) {
             if (_isInvincible) return;
@@ -26,7 +27,7 @@ namespace Controllers.Creatures {
             base.ReceiveDamage(damage);
             _isInvincible = true;
 
-            GlobalScope.ExecuteWithDelay(3, () => {
+            GlobalScope.ExecuteWithDelay(1, () => {
                 _isInvincible = false;
                 GetComponent<Animator>().Play("Idle");
             });
@@ -34,10 +35,9 @@ namespace Controllers.Creatures {
 
         public GameObject CameraHolder => transform.Find("Camera Holder").gameObject;
         private bool IsFreezed { get; set; }
-
+        private Vector3 ShootPosition => transform.position + _shootDirection.normalized * 25;
 
         [SerializeField] private float shotCost;
-
         [SerializeField] private LayerMask layerMask, wallLayerMask;
 
         [SerializeField] private GameObject spitPrefab;
@@ -46,37 +46,36 @@ namespace Controllers.Creatures {
         private float _timeInBody = 2F;
         private Enemy.EnemyType _appliedEnemyType = Enemy.EnemyType.Assassin;
 
-        private bool _canPerformSoulBlast = true;
         private bool _canShoot = true, _isInvincible;
-        private Quaternion _defaultRotation;
 
         private Vector3 _shootDirection;
+        private Func<Vector3, Bullet.Builder> _bulletBuilderAction;
 
-        public void RechargeSoulBlast() => _canPerformSoulBlast = true;
+        public void RechargeSoulBlast() => CanPerformSoulBlast = true;
         private void Recharge() => _canShoot = true;
 
         private void Freeze() {
             IsFreezed = true;
             GetComponent<CapsuleCollider>().enabled = false;
+            body.SetActive(false);
         }
 
         public void UnFreeze() {
             IsFreezed = false;
             GetComponent<CapsuleCollider>().enabled = true;
+            body.SetActive(true);
         }
+
+        private Bullet.Builder BulletBuilder(Vector3 bulletPosition) => _bulletBuilderAction.Invoke(bulletPosition);
 
         private void Shoot() {
             if (!_canShoot) return;
 
             _canShoot = false;
-            var bullet = Instantiate(
-                    bulletPrefab,
-                    transform.position + _shootDirection.normalized * 25,
-                    Quaternion.identity
-                )
-                .GetComponent<Bullet>()
+            var bullet = BulletBuilder(ShootPosition)
                 .SetTarget(Bullet.BulletTarget.Enemy)
-                .SetColor(Color.red).SetSpeedModifier(2F);
+                .SetColor(Color.red)
+                .Result();
 
             bullet.gameObject.GetComponent<Rigidbody>().velocity =
                 _shootDirection.normalized * bullet.GetComponent<Bullet>().MovementSpeed;
@@ -89,9 +88,9 @@ namespace Controllers.Creatures {
         }
 
         private void SoulBlast() {
-            if (!_canPerformSoulBlast || _timeInBody < 2F) return;
+            if (!CanPerformSoulBlast || _timeInBody < 2F) return;
 
-            _canPerformSoulBlast = false;
+            CanPerformSoulBlast = false;
             var spit = Instantiate(spitPrefab).GetComponent<Spit>().transform;
             spit.position = transform.position + _shootDirection.normalized * 15;
             spit.rotation = quaternion.identity;
@@ -99,7 +98,7 @@ namespace Controllers.Creatures {
             spit.GetComponent<Rigidbody>().velocity =
                 _shootDirection.normalized * spitPrefab.GetComponent<Projectile>().MovementSpeed;
 
-            SwapWith(GameManager.Instance.SpawnEnemyAt(transform.position, Enemy.EnemyType.Assassin));
+            SwapWith(GameManager.Instance.SpawnEnemyAt(transform.position, _appliedEnemyType));
             Freeze();
         }
 
@@ -119,24 +118,28 @@ namespace Controllers.Creatures {
 
             GlobalScope.ExecuteEveryInterval(
                 1F,
-                () => _timeInBody += 1F,
+                () => _timeInBody += IsFreezed ? 0F : 1F,
                 () => !IsAlive
             );
 
-            _defaultRotation = Quaternion.LookRotation(transform.position - CameraScript.Instance.transform.position);
-            Body.transform.rotation = _defaultRotation;
+            DefaultRotation = Quaternion.LookRotation(transform.position - CameraScript.Instance.transform.position);
+            Body.transform.rotation = DefaultRotation;
         }
 
-        protected override void Start() { }
+        protected override void Start() {
+            _bulletBuilderAction = bulletPosition => new Bullet.Builder(
+                Instantiate(bulletPrefab, bulletPosition, Quaternion.identity).GetComponent<Bullet>()
+            );
+        }
 
         protected override void Update() {
             var ray = CameraScript.Instance.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask)) {
+            if (Physics.Raycast(ray, out var raycastHit, float.MaxValue, layerMask)) {
                 _shootDirection = raycastHit.point - transform.position;
                 _shootDirection = new Vector3(_shootDirection.x, 0F, _shootDirection.z).normalized;
             }
 
-            if (Input.GetKey(KeyCode.Mouse1) && _canPerformSoulBlast) {
+            if (Input.GetKey(KeyCode.Mouse1) && CanPerformSoulBlast) {
                 Time.timeScale = 0.6F;
                 DrawLine();
             }
@@ -180,6 +183,14 @@ namespace Controllers.Creatures {
 
         private void ApplyTurretControls() {
             body.transform.Find("Center").transform.LookAt(transform.position + _shootDirection * 100);
+
+            if (Input.GetKey(KeyCode.Mouse0)) {
+                Shoot();
+            }
+
+            if (Input.GetKeyUp(KeyCode.Mouse1)) {
+                SoulBlast();
+            }
         }
 
         private void OnCollisionEnter(Collision other) {
@@ -188,9 +199,15 @@ namespace Controllers.Creatures {
             }
         }
 
-        protected override void OnSwap() {
+        protected override void OnSwap(Creature other) {
             _timeInBody = 0F;
+            _appliedEnemyType = ((Enemy) other).Type;
+            _bulletBuilderAction = bulletPosition => ((Enemy) other).BulletBuilder(bulletPosition);
+            Body.GetComponent<CreatureAnimationController>()?.SetColor(Color.white, 2);
         }
+
+        protected override void OnReceiveDamage() =>
+            Body.GetComponent<CreatureAnimationController>()?.OnReceiveDamage();
 
         private void DrawLine() {
             var lineRenderer = GameObject.Find("Line Renderer").GetComponent<LineRenderer>();
