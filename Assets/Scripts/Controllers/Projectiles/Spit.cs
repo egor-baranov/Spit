@@ -45,13 +45,14 @@ namespace Controllers.Projectiles {
                     ? Color.green
                     : Color.white;
 
-            Time.timeScale =
-                Vector3.Distance(list[0].transform.position, transform.position) <= invasionRadius * 1.3F
-                    ? slowTimeScale
-                    : 1;
+            if (_killPlayer) {
+                Time.timeScale =
+                    Vector3.Distance(list[0].transform.position, transform.position) <= invasionRadius * 1.3F
+                        ? slowTimeScale
+                        : 1;
+            }
 
             if (Input.GetKeyDown(KeyCode.Mouse1)) {
-                Debug.Log(Vector3.Distance(list[0].transform.position, transform.position));
                 if (list.Count > 0 &&
                     Vector3.Distance(list[0].transform.position, transform.position) <= invasionRadius) {
                     _killPlayer = false;
@@ -81,10 +82,10 @@ namespace Controllers.Projectiles {
         protected override void OnDestroy() {
             if (_killPlayer) {
                 Player.Instance.HealthPoints = 0;
+                Time.timeScale = 1;
                 return;
             }
 
-            Time.timeScale = 1;
             CameraScript.Instance.SetTarget(Player.Instance.CameraHolder.transform, 5);
             GameManager.Instance.SetTargetForAllEnemies(Player.Instance.transform);
             Player.Instance.UnFreeze();

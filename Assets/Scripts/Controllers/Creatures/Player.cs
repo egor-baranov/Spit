@@ -144,7 +144,6 @@ namespace Controllers.Creatures {
                 DrawLine();
             }
             else {
-                Time.timeScale = 1F;
                 ClearLine();
             }
 
