@@ -1437,11 +1437,11 @@ MonoBehaviour:
   cameraDistance: -300
   zoomOutScale: 1.3
   cameraRangeX:
-    min: -500
-    max: 500
+    min: -400
+    max: 400
   cameraRangeZ:
-    min: -500
-    max: 500
+    min: -480
+    max: 400
   layerMask:
     serializedVersion: 2
     m_Bits: 768
@@ -2209,7 +2209,7 @@ GameObject:
   m_Component:
   - component: {fileID: 635149398}
   - component: {fileID: 635149399}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: Aim
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2731,12 +2731,12 @@ PrefabInstance:
     - target: {fileID: 8150201047973874761, guid: f78597aca4d3d894289b7b5eee6c94c7,
         type: 3}
       propertyPath: m_Layer
-      value: 11
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9013343594305532999, guid: f78597aca4d3d894289b7b5eee6c94c7,
         type: 3}
       propertyPath: m_Layer
-      value: 11
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f78597aca4d3d894289b7b5eee6c94c7, type: 3}
@@ -4129,7 +4129,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1246380277}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: Camera Holder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4755,7 +4755,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1398285786}
   - component: {fileID: 1398285787}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5383,7 +5383,7 @@ GameObject:
   - component: {fileID: 1610636064}
   - component: {fileID: 1610636063}
   - component: {fileID: 1610636065}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: Body
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -5863,7 +5863,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1668207479}
   - component: {fileID: 1668207480}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: Highlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5959,8 +5959,7 @@ GameObject:
   - component: {fileID: 1829646482}
   - component: {fileID: 1829646484}
   - component: {fileID: 1829646485}
-  - component: {fileID: 1829646486}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -5998,7 +5997,6 @@ MonoBehaviour:
   maxHp: 25
   movementSpeed: 200
   body: {fileID: 2050323326}
-  rotationSpeed: 1
   rechargeTime: 0.3
   shotCost: 1
   layerMask:
@@ -6011,8 +6009,6 @@ MonoBehaviour:
     type: 3}
   bulletPrefab: {fileID: 8638688114809136296, guid: 55f9c827186315c499ad0eeecd7c9ae2,
     type: 3}
-  cameraAngle: 75
-  canPerformSoulBlast: 1
 --- !u!136 &1829646482
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -6078,21 +6074,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &1829646486
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1829646479}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 941cf068ce424a3c8d423f13525b4584, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  skeletonAnimation: {fileID: 2050323327}
-  idle: {fileID: 11400000, guid: 4da94fae053065f4fbc90402e759e627, type: 2}
-  movement: {fileID: 11400000, guid: 5fd37bc6b69ab1f459a0ab5bd3944e91, type: 2}
 --- !u!1 &1860858749
 GameObject:
   m_ObjectHideFlags: 0
@@ -6598,7 +6579,8 @@ GameObject:
   - component: {fileID: 2050323328}
   - component: {fileID: 2050323327}
   - component: {fileID: 2050323332}
-  m_Layer: 11
+  - component: {fileID: 2050323331}
+  m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6697,13 +6679,28 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2050323326}
   m_LocalRotation: {x: 0.14780942, y: -0, z: -0, w: 0.9890159}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -2.45, z: 0}
   m_LocalScale: {x: 1.8, y: 1.8, z: 1}
   m_Children:
   - {fileID: 823300255}
   m_Father: {fileID: 1829646483}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 17, y: 0, z: 0}
+--- !u!114 &2050323331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2050323326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 941cf068ce424a3c8d423f13525b4584, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonAnimation: {fileID: 2050323327}
+  idle: {fileID: 11400000, guid: 4da94fae053065f4fbc90402e759e627, type: 2}
+  movement: {fileID: 11400000, guid: 5fd37bc6b69ab1f459a0ab5bd3944e91, type: 2}
 --- !u!136 &2050323332
 CapsuleCollider:
   m_ObjectHideFlags: 0
