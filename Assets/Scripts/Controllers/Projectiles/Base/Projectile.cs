@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Controllers.Projectiles {
+namespace Controllers.Projectiles.Base {
     public abstract class Projectile : MonoBehaviour {
         public float MovementSpeed => movementSpeed;
 
