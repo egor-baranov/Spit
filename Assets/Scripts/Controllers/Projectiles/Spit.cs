@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using Controllers.Creatures;
+using Controllers.Creatures.Enemies.Base;
+using Controllers.Projectiles.Base;
 using Core;
 using UnityEngine;
 
@@ -56,9 +58,12 @@ namespace Controllers.Projectiles {
                     GameManager.soulShotCount += 1;
                     Player.Instance.SwapWith(list[0]);
 
-                    Player.Instance.GetComponent<Rigidbody>()
-                        .AddForce((Player.Instance.transform.position - transform.position).normalized * 400,
-                            ForceMode.Impulse);
+                    if (list[0].Type != Enemy.EnemyType.Turret) {
+                        Player.Instance.GetComponent<Rigidbody>().AddForce(
+                            (Player.Instance.transform.position - transform.position).normalized * 400,
+                            ForceMode.Impulse
+                        );
+                    }
 
                     GlobalScope.ExecuteWithDelay(
                         slowmoTimeout,
