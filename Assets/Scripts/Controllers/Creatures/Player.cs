@@ -69,8 +69,6 @@ namespace Controllers.Creatures {
         private Bullet.Builder BulletBuilder(Vector3 bulletPosition) => _bulletBuilderAction.Invoke(bulletPosition);
 
         private void Shoot() {
-            if (!_canShoot) return;
-
             _canShoot = false;
             var bullet = BulletBuilder(ShootPosition)
                 .SetTarget(Bullet.BulletTarget.Enemy)
@@ -171,7 +169,8 @@ namespace Controllers.Creatures {
                 GetComponent<Rigidbody>().velocity = velocity;
             }
 
-            if (Input.GetKey(KeyCode.Mouse0)) {
+
+            if (Input.GetKey(KeyCode.Mouse0) && _canShoot || Input.GetKeyDown(KeyCode.Mouse0)) {
                 Shoot();
             }
 
@@ -183,7 +182,7 @@ namespace Controllers.Creatures {
         private void ApplyTurretControls() {
             body.transform.Find("Center").transform.LookAt(transform.position + _shootDirection * 100);
 
-            if (Input.GetKey(KeyCode.Mouse0)) {
+            if (Input.GetKey(KeyCode.Mouse0) && _canShoot || Input.GetKeyDown(KeyCode.Mouse0)) {
                 Shoot();
             }
 
