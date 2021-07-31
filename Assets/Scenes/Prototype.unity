@@ -1441,7 +1441,7 @@ MonoBehaviour:
     max: 400
   cameraRangeZ:
     min: -480
-    max: 400
+    max: 380
   layerMask:
     serializedVersion: 2
     m_Bits: 768
@@ -5998,6 +5998,7 @@ MonoBehaviour:
   movementSpeed: 200
   body: {fileID: 2050323326}
   rechargeTime: 0.3
+  specialAbilityCooldown: 0
   shotCost: 1
   layerMask:
     serializedVersion: 2
