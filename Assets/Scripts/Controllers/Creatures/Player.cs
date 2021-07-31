@@ -46,13 +46,12 @@ namespace Controllers.Creatures {
         private float _timeInBody = 2F;
         private Enemy.EnemyType _appliedEnemyType = Enemy.EnemyType.Assassin;
 
-        private bool _canShoot = true, _isInvincible;
+        private bool _canShoot = true, _isInvincible, _canUseSpecialAbility = true, _canControl = true;
 
         private Vector3 _shootDirection;
         private Func<Vector3, Bullet.Builder> _bulletBuilderAction;
 
         public void RechargeSoulBlast() => CanPerformSoulBlast = true;
-        private void Recharge() => _canShoot = true;
 
         private void Freeze() {
             IsFreezed = true;
@@ -81,7 +80,7 @@ namespace Controllers.Creatures {
 
             GlobalScope.ExecuteWithDelay(
                 rechargeTime * Random.Range(0.8F, 1.2F),
-                Recharge
+                () => _canShoot = true
             );
         }
 
@@ -145,7 +144,7 @@ namespace Controllers.Creatures {
                 ClearLine();
             }
 
-            if (IsAlive && !IsFreezed) {
+            if (IsAlive && !IsFreezed && _canControl) {
                 ApplyControls(_appliedEnemyType);
             }
         }
@@ -169,13 +168,37 @@ namespace Controllers.Creatures {
                 GetComponent<Rigidbody>().velocity = velocity;
             }
 
-
             if (Input.GetKey(KeyCode.Mouse0) && _canShoot || Input.GetKeyDown(KeyCode.Mouse0)) {
                 Shoot();
             }
 
             if (Input.GetKeyUp(KeyCode.Mouse1)) {
                 SoulBlast();
+            }
+
+            if ((Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Space)) && _canUseSpecialAbility) {
+                var dashVector = (
+                    MovementState.PossibleKeyList.Where(Input.GetKey).Any()
+                        ? velocity
+                        : _shootDirection
+                ).normalized * 1500;
+                GetComponent<Rigidbody>().AddForce(dashVector, ForceMode.Impulse);
+
+                GlobalScope.ExecuteWithDelay(
+                    0.6F, () => _canControl = true, () => _canControl = false
+                );
+
+                GlobalScope.ExecuteWithDelay(
+                    10,
+                    () => {
+                        _canUseSpecialAbility = true;
+                        _isInvincible = false;
+                    },
+                    () => {
+                        _canUseSpecialAbility = false;
+                        _isInvincible = true;
+                    }
+                );
             }
         }
 
@@ -188,6 +211,20 @@ namespace Controllers.Creatures {
 
             if (Input.GetKeyUp(KeyCode.Mouse1)) {
                 SoulBlast();
+            }
+
+            if ((Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Space)) && _canUseSpecialAbility) {
+                var prevRechargeTime = rechargeTime;
+                GlobalScope.ExecuteWithDelay(
+                    5F,
+                    () => {
+                        rechargeTime = prevRechargeTime;
+                        GlobalScope.ExecuteWithDelay(
+                            3F, () => _canControl = true, () => _canControl = false
+                        );
+                    },
+                    () => rechargeTime = 0.1F
+                );
             }
         }
 
