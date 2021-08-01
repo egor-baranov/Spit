@@ -3029,6 +3029,9 @@ MonoBehaviour:
   turretPrefab: {fileID: 7455066615997516816, guid: 8fdb7528a1d550a4ea0f6beec868ebf0,
     type: 3}
   spawnEnemyCount: 3
+  wallLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!4 &914491671
 Transform:
   m_ObjectHideFlags: 0
@@ -5930,7 +5933,7 @@ Light:
   m_Cookie: {fileID: 0}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
-  m_RenderMode: 0
+  m_RenderMode: 1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -5995,7 +5998,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHp: 25
-  movementSpeed: 200
+  movementSpeed: 150
   body: {fileID: 2050323326}
   rechargeTime: 0.3
   specialAbilityCooldown: 0

@@ -51,7 +51,7 @@ namespace Controllers.Creatures.Enemies.Base {
             Player.Instance.RechargeSoulBlast();
             GameManager.Instance.RemoveEnemy(this);
             GameManager.Instance.SpawnEnemies(2);
-            GameManager.killedEnemiesCount += 1;
+            GameManager.KilledEnemiesCount += 1;
         }
 
         protected override void OnReceiveDamage() {
@@ -72,13 +72,12 @@ namespace Controllers.Creatures.Enemies.Base {
                 return;
             }
 
-            if (!Physics.SphereCast(ShootPosition, 10, Target.position, out var hit)) {
+            if (!Physics.SphereCast(ShootPosition, 1, Target.position, out var hit) ||
+                hit.collider.CompareTag("Player")) {
                 return;
             }
 
             if (Vector3.Distance(transform.position, Target.position) <= maxShootDistance) {
-                ShootDirection = Target.position - transform.position;
-                ShootDirection = new Vector3(ShootDirection.x, 0, ShootDirection.z);
                 Shoot();
             }
         }

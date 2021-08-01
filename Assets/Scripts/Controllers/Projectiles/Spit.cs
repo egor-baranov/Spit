@@ -56,7 +56,7 @@ namespace Controllers.Projectiles {
                 if (list.Count > 0 &&
                     Vector3.Distance(list[0].transform.position, transform.position) <= invasionRadius) {
                     _killPlayer = false;
-                    GameManager.soulShotCount += 1;
+                    GameManager.SoulShotCount += 1;
                     Player.Instance.SwapWith(list[0]);
 
                     if (list[0].Type != Enemy.EnemyType.Turret) {
