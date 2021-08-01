@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Controllers.Creatures;
 using Controllers.Creatures.Enemies.Base;
@@ -12,18 +13,19 @@ namespace Core {
     public class GameManager : MonoBehaviour {
         public static GameManager Instance { get; private set; }
 
-        public static int soulShotCount = 0, killedEnemiesCount = 0;
+        public static int SoulShotCount = 0, KilledEnemiesCount = 0;
 
         public IEnumerable<Enemy> EnemyList => _enemyList;
 
         [SerializeField] private GameObject assassinPrefab, turretPrefab;
         [SerializeField] private int spawnEnemyCount;
+        [SerializeField] private LayerMask wallLayerMask;
 
         private readonly List<Enemy> _enemyList = new List<Enemy>();
 
         public static void OnDeath() =>
             UiManager.Instance.OnDeath(
-                (int) Time.timeSinceLevelLoad * (soulShotCount + 1) * (killedEnemiesCount + 1)
+                (int) Time.timeSinceLevelLoad * (SoulShotCount + 1) * (KilledEnemiesCount + 1)
             );
 
         public static void OnRestart() => SceneManager.LoadScene("Prototype");
@@ -34,13 +36,20 @@ namespace Core {
         public Enemy SpawnEnemyAt(Vector3 position, Enemy.EnemyType enemyType) =>
             Instantiate(GetEnemyWithType(enemyType), position, Quaternion.identity).GetComponent<Enemy>();
 
-        public void SpawnEnemies(int count) => 0.Until(count).ToList().ForEach(it =>
-            Instantiate(
-                GetRandomEnemyPrefab(),
-                new Vector3(Random.Range(-200, 200), 6, Random.Range(-200, 200)),
-                Quaternion.identity
-            )
-        );
+        public void SpawnEnemies(int count) {
+            var list = new List<Enemy>();
+            _enemyList.ToList().ForEach(it => list.Add(it));
+            foreach (var i in 0.Until(count)) {
+                list.Add(Instantiate(
+                    GetRandomEnemyPrefab(),
+                    FindPositionWithCondition(point =>
+                        !Physics.OverlapSphere(point, 50, wallLayerMask).Any() &&
+                        list.All(it => Vector3.Distance(it.transform.position, point) > 70)
+                    ),
+                    Quaternion.identity
+                ).GetComponent<Enemy>());
+            }
+        }
 
         public void RegisterEnemy(Enemy enemy) => _enemyList.Add(enemy);
         public void RemoveEnemy(Enemy enemy) => _enemyList.Remove(enemy);
@@ -61,8 +70,8 @@ namespace Core {
         private void Update() {
             if (Player.Instance.HealthPoints > 0) {
                 UiManager.Instance.DisplayScore(
-                    (int) Time.timeSinceLevelLoad * (soulShotCount + 1) * (killedEnemiesCount + 1),
-                    (int) Time.timeSinceLevelLoad, killedEnemiesCount, soulShotCount
+                    (int) Time.timeSinceLevelLoad * (SoulShotCount + 1) * (KilledEnemiesCount + 1),
+                    (int) Time.timeSinceLevelLoad, KilledEnemiesCount, SoulShotCount
                 );
             }
         }
@@ -79,6 +88,19 @@ namespace Core {
                 default:
                     return turretPrefab;
             }
+        }
+
+        private static Vector3 FindPositionWithCondition(Func<Vector3, bool> condition) {
+            var point = new Vector3(Random.Range(-400, 400), 6, Random.Range(-400, 400));
+            foreach (var _ in 0.Until(30000)) {
+                if (condition(point)) {
+                    return point;
+                }
+
+                point = new Vector3(Random.Range(-400, 400), 6, Random.Range(-400, 400));
+            }
+
+            return point;
         }
     }
 }
