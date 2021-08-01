@@ -31,7 +31,7 @@ namespace Core {
 
             private static IEnumerator DoEveryIntervalCoroutine(float timeInterval, UnityAction action,
                 Func<bool> stopCondition) {
-                while (!stopCondition()) {
+                while (stopCondition == null || !stopCondition()) {
                     yield return new WaitForSecondsRealtime(timeInterval);
 
                     try {
