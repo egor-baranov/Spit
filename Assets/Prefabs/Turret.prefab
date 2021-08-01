@@ -173,12 +173,13 @@ MonoBehaviour:
   maxHp: 50
   movementSpeed: 0
   body: {fileID: 7455066615720416592}
-  changeTarget: 0
+  rechargeTime: 0.3
+  specialAbilityCooldown: 3
   maxDistanceFromPlayer: 600
   maxShootDistance: 150
-  rechargeTime: 0.3
   bulletPrefab: {fileID: 8638688114809136296, guid: 55f9c827186315c499ad0eeecd7c9ae2,
     type: 3}
+  targetAppearReactionTimeout: 0.5
 --- !u!54 &7455066615997516826
 Rigidbody:
   m_ObjectHideFlags: 0
