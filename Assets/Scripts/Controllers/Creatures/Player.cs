@@ -181,11 +181,11 @@ namespace Controllers.Creatures {
                     MovementState.PossibleKeyList.Where(Input.GetKey).Any()
                         ? velocity
                         : _shootDirection
-                ).normalized * 1500;
+                ).normalized * 2000;
                 GetComponent<Rigidbody>().AddForce(dashVector, ForceMode.Impulse);
 
                 GlobalScope.ExecuteWithDelay(
-                    0.6F, () => _canControl = true, () => _canControl = false
+                    0.5F, () => _canControl = true, () => _canControl = false
                 );
 
                 GlobalScope.ExecuteWithDelay(
