@@ -177,7 +177,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 37fb0a2690b5e7e49a002228fc97c0c5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 565ded8edd2c2c147b06682b616a7fcd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -265,7 +265,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 9903f94d19fc93d4c86341f64afaf17c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: afb9f626899f92843a5dfad69d91ebb9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -288,7 +288,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 0, g: 0.37565756, b: 1, a: 1}
-  m_Intensity: 5
+  m_Intensity: 3
   m_Range: 200
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -350,8 +350,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxTimeAlive: 2
-  movementSpeed: 250
-  slowTimeScale: 0.6
+  movementSpeed: 450
+  slowTimeScale: 0.25
   slowmoTimeout: 1
   invasionRadius: 20
 --- !u!54 &7417916123268976603
