@@ -180,6 +180,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 8638688114809136296, guid: 55f9c827186315c499ad0eeecd7c9ae2,
     type: 3}
   targetAppearReactionTimeout: 0.5
+  rotationSpeed: 1
 --- !u!54 &7455066615997516826
 Rigidbody:
   m_ObjectHideFlags: 0

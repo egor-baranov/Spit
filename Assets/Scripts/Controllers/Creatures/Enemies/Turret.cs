@@ -10,6 +10,7 @@ namespace Controllers.Creatures.Enemies {
     public class Turret : Enemy {
         public override EnemyType Type => EnemyType.Turret;
         [SerializeField] private float targetAppearReactionTimeout;
+        [SerializeField] private float rotationSpeed;
 
         private bool _doesSeeTarget;
 
@@ -48,6 +49,9 @@ namespace Controllers.Creatures.Enemies {
         protected override void Shoot() {
             if (!CanShoot) return;
             base.Shoot();
+            
+            ShootDirection = Center.forward;
+            ShootDirection = new Vector3(ShootDirection.x, 0, ShootDirection.z);
 
             var bullet = BulletBuilder(ShootPosition)
                 .SetTarget(Bullet.BulletTarget.Everything)
@@ -72,11 +76,13 @@ namespace Controllers.Creatures.Enemies {
             if (Target == null) {
                 Target = Player.Instance.transform;
             }
-            
+
             if (SeeTarget) {
-                Center.transform.LookAt(Target);
-                ShootDirection = Target.position - transform.position;
-                ShootDirection = new Vector3(ShootDirection.x, 0, ShootDirection.z);
+                Center.transform.rotation = Quaternion.Slerp(
+                    Center.transform.rotation,
+                    Quaternion.LookRotation(Target.position - Center.position), 
+                    Time.deltaTime * rotationSpeed
+                );
                 if (CanShoot) Shoot();
             }
         }
@@ -88,9 +94,7 @@ namespace Controllers.Creatures.Enemies {
                 transform.position,
                 Target.transform.position - transform.position,
                 Mathf.Infinity
-            ).OrderBy(h=>h.distance);
-            
-            Debug.Log("[" + string.Join(", ", hitList.Select(it => it.collider.tag)) + "]");
+            ).OrderBy(h => h.distance);
 
             foreach (var hit in hitList) {
                 if (hit.collider.CompareTag("Wall")) return false;
@@ -98,7 +102,7 @@ namespace Controllers.Creatures.Enemies {
                     return Vector3.Distance(transform.position, Target.position) <= maxShootDistance;
                 }
             }
-            
+
             return false;
         }
 
