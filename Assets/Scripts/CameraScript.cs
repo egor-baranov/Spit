@@ -10,6 +10,7 @@ public class CameraScript : MonoBehaviour {
     private readonly Vector3 _shootingDistance = -Vector3.up * 240;
     [SerializeField] private float cameraDistance;
     [SerializeField] private float zoomOutScale;
+    [SerializeField] private float feedbackScale;
 
     [SerializeField] private MinMaxFloat cameraRangeX, cameraRangeZ;
     [SerializeField] private LayerMask layerMask;
@@ -18,10 +19,16 @@ public class CameraScript : MonoBehaviour {
     private float _movementSpeed;
     private float _zoomCoefficient;
 
+    private Vector3 _movementPosition;
+
     public void SetTarget(Transform targetTransform, float speed, float zoomCoefficient = 1F) {
         _target = targetTransform;
         _movementSpeed = speed;
         _zoomCoefficient = zoomCoefficient;
+    }
+
+    public void Feedback(Vector3 direction) {
+        transform.position -= direction.normalized * feedbackScale;
     }
 
     public void LateUpdate() {
@@ -36,12 +43,16 @@ public class CameraScript : MonoBehaviour {
                 mousePosition = new Vector3(raycastHit.point.x, _target.position.y, raycastHit.point.z);
             }
 
-            transform.position = Vector3.Lerp(
-                transform.position,
+            _movementPosition =
                 Fit((_target.position * 7 + mousePosition) / 8 -
                     (Input.GetKey(KeyCode.Mouse1) && Player.Instance.CanPerformSoulBlast
                         ? _shootingDistance
-                        : _distanceFromTarget) * _zoomCoefficient),
+                        : _distanceFromTarget) * _zoomCoefficient
+                );
+
+            transform.position = Vector3.Lerp(
+                transform.position,
+                _movementPosition,
                 Time.deltaTime * _movementSpeed
             );
         }
