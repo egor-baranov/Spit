@@ -7,6 +7,7 @@ using Controllers.Creatures.Enemies.Base;
 using Controllers.Projectiles;
 using Controllers.Projectiles.Base;
 using Core;
+using Pathfinding;
 using Unity.Mathematics;
 using UnityEngine;
 using Util.Classes;
@@ -77,6 +78,8 @@ namespace Controllers.Creatures {
             bullet.gameObject.GetComponent<Rigidbody>().velocity =
                 _shootDirection.normalized * bullet.GetComponent<Bullet>().MovementSpeed;
             HealthPoints -= shotCost;
+            
+            CameraScript.Instance.Feedback(_shootDirection);
 
             GlobalScope.ExecuteWithDelay(
                 rechargeTime * Random.Range(0.8F, 1.2F),
@@ -126,6 +129,19 @@ namespace Controllers.Creatures {
         protected override void Start() {
             _bulletBuilderAction = bulletPosition => new Bullet.Builder(
                 Instantiate(bulletPrefab, bulletPosition, Quaternion.identity).GetComponent<Bullet>()
+            );
+            
+            var prevGuo = new GraphUpdateObject(GetComponent<Collider>().bounds) {updatePhysics = true};
+            GlobalScope.ExecuteEveryInterval(
+                0.1F, () => {
+                    var guo = new GraphUpdateObject(GetComponent<Collider>().bounds) {updatePhysics = true};
+
+                    AstarPath.active.UpdateGraphs(guo);
+                    AstarPath.active.UpdateGraphs(prevGuo);
+
+                    prevGuo = guo;
+                },
+                () => false
             );
         }
 
@@ -181,11 +197,13 @@ namespace Controllers.Creatures {
                     MovementState.PossibleKeyList.Where(Input.GetKey).Any()
                         ? velocity
                         : _shootDirection
-                ).normalized * 2000;
+                ).normalized * 1500;
                 GetComponent<Rigidbody>().AddForce(dashVector, ForceMode.Impulse);
 
                 GlobalScope.ExecuteWithDelay(
-                    0.5F, () => _canControl = true, () => _canControl = false
+                    0.5F, 
+                    () => _canControl = true, 
+                    () => _canControl = false
                 );
 
                 GlobalScope.ExecuteWithDelay(
