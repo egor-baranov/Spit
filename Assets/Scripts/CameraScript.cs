@@ -45,7 +45,7 @@ public class CameraScript : MonoBehaviour {
 
             _movementPosition =
                 Fit((_target.position * 7 + mousePosition) / 8 -
-                    (Input.GetKey(KeyCode.Mouse1) && Player.Instance.CanPerformSoulBlast
+                    (Input.GetKey(KeyCode.Mouse1) && Player.Instance.CanPerformSoulBlast || _target != CameraHolder
                         ? _shootingDistance
                         : _distanceFromTarget) * _zoomCoefficient
                 );
@@ -57,16 +57,16 @@ public class CameraScript : MonoBehaviour {
             );
         }
 
-        transform.rotation = Quaternion.RotateTowards(
-            CameraHolder.transform.rotation,
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
             Quaternion.Euler(
-                Input.GetKey(KeyCode.Mouse1) && Player.Instance.CanPerformSoulBlast
+                Input.GetKey(KeyCode.Mouse1) && Player.Instance.CanPerformSoulBlast || _target != CameraHolder
                     ? 90
                     : 73,
                 transform.rotation.y,
                 transform.rotation.z
             ),
-            Time.fixedDeltaTime * 800
+            Time.deltaTime * 5
         );
     }
 
