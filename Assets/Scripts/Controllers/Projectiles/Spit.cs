@@ -23,6 +23,8 @@ namespace Controllers.Projectiles {
 
             CameraScript.Instance.SetTarget(transform, 14, 0.5F);
             GameManager.Instance.SetTargetForAllEnemies(transform);
+
+            Time.timeScale = slowTimeScale;
         }
 
         protected override void Start() { }
@@ -44,13 +46,6 @@ namespace Controllers.Projectiles {
                     transform.position) <= invasionRadius
                     ? Color.green
                     : Color.white;
-
-            if (_killPlayer) {
-                Time.timeScale =
-                    Vector3.Distance(list[0].transform.position, transform.position) <= invasionRadius * 1.3F
-                        ? slowTimeScale
-                        : 1;
-            }
 
             if (Input.GetKeyDown(KeyCode.Mouse1)) {
                 if (list.Count > 0 &&
@@ -80,9 +75,10 @@ namespace Controllers.Projectiles {
         }
 
         protected override void OnDestroy() {
+            Time.timeScale = 1;
+            
             if (_killPlayer) {
                 Player.Instance.HealthPoints = 0;
-                Time.timeScale = 1;
                 return;
             }
 
