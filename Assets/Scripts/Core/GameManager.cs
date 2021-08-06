@@ -17,6 +17,8 @@ namespace Core {
 
         public IEnumerable<Enemy> EnemyList => _enemyList;
 
+        public LayerMask WallLayerMask => wallLayerMask;
+
         [SerializeField] private GameObject assassinPrefab, turretPrefab;
         [SerializeField] private int spawnEnemyCount;
         [SerializeField] private LayerMask wallLayerMask;
@@ -42,7 +44,7 @@ namespace Core {
             foreach (var i in 0.Until(count)) {
                 list.Add(Instantiate(
                     GetRandomEnemyPrefab(),
-                    FindPositionWithCondition(point =>
+                    FindPointWithCondition(point =>
                         !Physics.OverlapSphere(point, 50, wallLayerMask).Any() &&
                         list.All(it => Vector3.Distance(it.transform.position, point) > 70)
                     ),
@@ -90,7 +92,7 @@ namespace Core {
             }
         }
 
-        private static Vector3 FindPositionWithCondition(Func<Vector3, bool> condition) {
+        private static Vector3 FindPointWithCondition(Func<Vector3, bool> condition) {
             var point = new Vector3(Random.Range(-400, 400), 6, Random.Range(-400, 400));
             foreach (var _ in 0.Until(30000)) {
                 if (condition(point)) {
