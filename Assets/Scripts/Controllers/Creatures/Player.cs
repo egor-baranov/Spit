@@ -78,7 +78,7 @@ namespace Controllers.Creatures {
             bullet.gameObject.GetComponent<Rigidbody>().velocity =
                 _shootDirection.normalized * bullet.GetComponent<Bullet>().MovementSpeed;
             HealthPoints -= shotCost;
-            
+
             CameraScript.Instance.Feedback(_shootDirection);
 
             GlobalScope.ExecuteWithDelay(
@@ -130,7 +130,7 @@ namespace Controllers.Creatures {
             _bulletBuilderAction = bulletPosition => new Bullet.Builder(
                 Instantiate(bulletPrefab, bulletPosition, Quaternion.identity).GetComponent<Bullet>()
             );
-            
+
             var prevGuo = new GraphUpdateObject(GetComponent<Collider>().bounds) {updatePhysics = true};
             GlobalScope.ExecuteEveryInterval(
                 0.1F, () => {
@@ -201,8 +201,8 @@ namespace Controllers.Creatures {
                 GetComponent<Rigidbody>().AddForce(dashVector, ForceMode.Impulse);
 
                 GlobalScope.ExecuteWithDelay(
-                    0.5F, 
-                    () => _canControl = true, 
+                    0.5F,
+                    () => _canControl = true,
                     () => _canControl = false
                 );
 
@@ -294,7 +294,7 @@ namespace Controllers.Creatures {
 
             lineRenderer.positionCount = positionList.Count;
             foreach (var i in 0.Until(positionList.Count)) {
-                lineRenderer.SetPosition(i, positionList[i]);
+                lineRenderer.SetPosition(i, new Vector3(positionList[i].x, positionList[i].z, -6));
             }
         }
 
