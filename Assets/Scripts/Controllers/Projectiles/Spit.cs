@@ -10,29 +10,40 @@ namespace Controllers.Projectiles {
         private GameObject Halo => transform.Find("Halo").gameObject;
         private GameObject Circle => transform.Find("Circle").gameObject;
 
+        private float InvasionRadius =>
+            invasionRadius * (1.25F * (maxTimeAlive - _timeAliveLeft) + 1F * _timeAliveLeft) / maxTimeAlive;
+
         [SerializeField] private float slowTimeScale;
         [SerializeField] private float slowmoTimeout;
         [SerializeField] private float invasionRadius;
 
-        private float _timeAliveLeft;
+        private float _timeAliveLeft, _circleDefaultLocalScale;
         private bool _killPlayer = true;
 
         protected override void Awake() {
             _timeAliveLeft = maxTimeAlive;
             Destroy(gameObject, maxTimeAlive);
 
-            CameraScript.Instance.SetTarget(transform, 14, 0.5F);
+            CameraScript.Instance.SetTarget(transform, 100, 0.5F);
             GameManager.Instance.SetTargetForAllEnemies(transform);
 
             Time.timeScale = slowTimeScale;
         }
 
-        protected override void Start() { }
+        protected override void Start() {
+            _circleDefaultLocalScale = Circle.transform.localScale.x;
+        }
 
         protected override void Update() {
             _timeAliveLeft -= Time.deltaTime;
             GetComponent<Light>().range = 200 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
             Halo.GetComponent<Light>().range = 10 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
+
+            Circle.transform.localScale =
+                Vector3.one *
+                (_circleDefaultLocalScale *
+                 (1.25F * (maxTimeAlive - _timeAliveLeft) + 1F * _timeAliveLeft)) /
+                maxTimeAlive;
 
             var list = GameManager.Instance.EnemyList.ToList();
             list.Sort((x, y) =>
@@ -43,13 +54,13 @@ namespace Controllers.Projectiles {
 
             Circle.GetComponent<SpriteRenderer>().color =
                 list.Count > 0 && Vector3.Distance(list[0].transform.position,
-                    transform.position) <= invasionRadius
+                    transform.position) <= InvasionRadius
                     ? Color.green
                     : Color.white;
 
             if (Input.GetKeyDown(KeyCode.Mouse1)) {
                 if (list.Count > 0 &&
-                    Vector3.Distance(list[0].transform.position, transform.position) <= invasionRadius) {
+                    Vector3.Distance(list[0].transform.position, transform.position) <= InvasionRadius) {
                     _killPlayer = false;
                     GameManager.SoulShotCount += 1;
                     Player.Instance.SwapWith(list[0]);
@@ -63,7 +74,12 @@ namespace Controllers.Projectiles {
 
                     GlobalScope.ExecuteWithDelay(
                         slowmoTimeout,
-                        () => Time.timeScale = 1F,
+                        () =>
+                            GlobalScope.ExecuteEveryInterval(
+                                0.1F,
+                                () => Time.timeScale = Mathf.Min(1, Time.timeScale + 0.1F),
+                                () => Time.timeScale >= 1
+                            ),
                         () => Time.timeScale = slowTimeScale
                     );
                     GameManager.Instance.RemoveEnemy(list[0]);
@@ -75,9 +91,8 @@ namespace Controllers.Projectiles {
         }
 
         protected override void OnDestroy() {
-            Time.timeScale = 1;
-            
             if (_killPlayer) {
+                Time.timeScale = 1F;
                 Player.Instance.HealthPoints = 0;
                 return;
             }
