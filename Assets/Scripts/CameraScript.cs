@@ -49,11 +49,15 @@ public class CameraScript : MonoBehaviour {
                         ? _shootingDistance
                         : _distanceFromTarget) * _zoomCoefficient
                 );
+            
+            var viewPortDistance = Vector2.Distance(
+                GetComponent<Camera>().WorldToViewportPoint(Player.Instance.transform.position),
+                GetComponent<Camera>().ScreenToViewportPoint(Input.mousePosition));
 
             transform.position = Vector3.Lerp(
                 transform.position,
                 _movementPosition,
-                Time.deltaTime * _movementSpeed
+                Time.deltaTime * _movementSpeed / (_target == CameraHolder ? viewPortDistance : 1)
             );
         }
 
@@ -83,8 +87,8 @@ public class CameraScript : MonoBehaviour {
 
     private void Start() {
         _distanceFromTarget = (transform.position - CameraHolder.position).normalized *
-                              (cameraDistance / Mathf.Pow(zoomOutScale, 2));
+                              (cameraDistance / Mathf.Pow(zoomOutScale, 3));
         transform.LookAt(CameraHolder);
-        SetTarget(CameraHolder, 5);
+        SetTarget(CameraHolder, 1);
     }
 }
