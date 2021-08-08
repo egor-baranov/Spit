@@ -24,17 +24,17 @@ namespace Controllers.Projectiles {
             _timeAliveLeft = maxTimeAlive;
             Destroy(gameObject, maxTimeAlive);
 
-            CameraScript.Instance.SetTarget(transform, 100, 0.5F);
+            CameraScript.Instance.SetTarget(transform, 50, 0.5F);
             GameManager.Instance.SetTargetForAllEnemies(transform);
 
-            Time.timeScale = slowTimeScale;
+            Time.timeScale = 1F;
         }
 
         protected override void Start() {
             _circleDefaultLocalScale = Circle.transform.localScale.x;
         }
 
-        protected override void Update() {
+        protected override void Update() { 
             _timeAliveLeft -= Time.deltaTime;
             GetComponent<Light>().range = 200 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
             Halo.GetComponent<Light>().range = 10 * Mathf.Sqrt(_timeAliveLeft / maxTimeAlive);
@@ -97,7 +97,7 @@ namespace Controllers.Projectiles {
                 return;
             }
 
-            CameraScript.Instance.SetTarget(Player.Instance.CameraHolder.transform, 5);
+            CameraScript.Instance.SetTarget(Player.Instance.CameraHolder.transform, 3);
             GameManager.Instance.SetTargetForAllEnemies(Player.Instance.transform);
             Player.Instance.UnFreeze();
         }

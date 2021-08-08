@@ -350,7 +350,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxTimeAlive: 2
-  movementSpeed: 450
+  movementSpeed: 250
   slowTimeScale: 0.25
   slowmoTimeout: 1
   invasionRadius: 20
