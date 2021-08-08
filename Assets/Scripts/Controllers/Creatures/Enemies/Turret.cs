@@ -44,13 +44,12 @@ namespace Controllers.Creatures.Enemies {
                 .SetScale(0.2F);
 
         protected override Vector3 ShootPosition => transform.position + ShootDirection.normalized * 18;
-        private Transform Center => body.transform.Find("Center");
 
         protected override void Shoot() {
             if (!CanShoot) return;
             base.Shoot();
-            
-            ShootDirection = Center.forward;
+
+            ShootDirection = Body.transform.forward;
             ShootDirection = new Vector3(ShootDirection.x, 0, ShootDirection.z);
 
             var bullet = BulletBuilder(ShootPosition)
@@ -78,9 +77,10 @@ namespace Controllers.Creatures.Enemies {
             }
 
             if (SeeTarget) {
-                Center.transform.rotation = Quaternion.Slerp(
-                    Center.transform.rotation,
-                    Quaternion.LookRotation(Target.position - Center.position), 
+                var lookRotation = Quaternion.LookRotation(Target.position - Body.transform.position);
+                Body.transform.rotation = Quaternion.Slerp(
+                    Body.transform.rotation,
+                    new Quaternion(0, lookRotation.y, lookRotation.z, lookRotation.w),
                     Time.deltaTime * rotationSpeed
                 );
                 if (CanShoot) Shoot();
