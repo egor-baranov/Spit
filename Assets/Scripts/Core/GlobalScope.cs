@@ -7,15 +7,31 @@ using Util.ExtensionMethods;
 namespace Core {
     public static class GlobalScope {
         private sealed class RelatedMonoBehaviour : MonoBehaviour {
-            internal void DoWithDelay(float delay, UnityAction action, UnityAction preAction = null) =>
-                StartCoroutine(DoWithDelayCoroutine(delay, action, preAction));
+            internal void DoWithDelay(
+                float delay,
+                UnityAction action,
+                UnityAction preAction = null) =>
+                StartCoroutine(
+                    DoWithDelayCoroutine(delay, action, preAction)
+                );
 
-            internal void DoEveryInterval(float timeInterval, UnityAction action,
+            internal void DoEveryInterval(
+                float timeInterval,
+                UnityAction action,
                 Func<bool> stopCondition = null) =>
-                StartCoroutine(DoEveryIntervalCoroutine(timeInterval, action, stopCondition));
+                StartCoroutine(
+                    DoEveryIntervalCoroutine(timeInterval, action, stopCondition)
+                );
 
-            internal void DoMultipleTimes(float timeSeparator, UnityAction action, int count, float preDelay = 0F) =>
-                StartCoroutine(DoMultipleTimesCoroutine(timeSeparator, action, count, preDelay));
+            internal void DoMultipleTimes(
+                float timeSeparator,
+                UnityAction action,
+                int count,
+                float preDelay = 0F,
+                Func<bool> stopCondition = null) =>
+                StartCoroutine(
+                    DoMultipleTimesCoroutine(timeSeparator, action, count, preDelay)
+                );
 
             private static IEnumerator DoWithDelayCoroutine(float time, UnityAction action,
                 UnityAction preAction = null) {
@@ -24,7 +40,7 @@ namespace Core {
                 try {
                     action.Invoke();
                 }
-                catch (Exception exception) {
+                catch {
                     // ignored
                 }
             }
@@ -44,9 +60,13 @@ namespace Core {
             }
 
             private static IEnumerator DoMultipleTimesCoroutine(float timeSeparator,
-                UnityAction action, int repeatTimes, float preDelay) {
+                UnityAction action, int repeatTimes, float preDelay, Func<bool> stopCondition = null) {
                 yield return new WaitForSecondsRealtime(preDelay);
                 foreach (var i in 0.Until(repeatTimes)) {
+                    if (stopCondition != null && stopCondition.Invoke()) {
+                        break;
+                    }
+
                     action.Invoke();
                     if (i != repeatTimes - 1) {
                         yield return new WaitForSecondsRealtime(timeSeparator);
@@ -85,13 +105,14 @@ namespace Core {
         }
 
         public static void ExecuteMultipleTimes(
-            float timeSeparator,
+            float timeInterval,
             UnityAction action,
             int count,
-            float preDelay = 0F) {
+            float preDelay = 0F,
+            Func<bool> stopCondition = null) {
             Init();
             try {
-                _relatedMonoBehaviour.DoMultipleTimes(timeSeparator, action, count, preDelay);
+                _relatedMonoBehaviour.DoMultipleTimes(timeInterval, action, count, preDelay, stopCondition);
             }
             catch (MissingReferenceException) {
                 Init();
