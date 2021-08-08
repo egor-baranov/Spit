@@ -15,10 +15,9 @@ namespace Controllers.Objects {
                 Player.Instance.transform.position - transform.position,
                 transform.up
             );
-            Debug.Log(angle);
             Pupil.transform.localPosition =
                 new Vector2(
-                    Mathf.Pow(Mathf.Abs(angle) / 90, 2) * (angle > 0 ? xRange.Max : xRange.Min),
+                    Mathf.Pow(Mathf.Abs(angle % 90) / 90, 2) * (angle > 0 ? xRange.Max : xRange.Min),
                     0
                 );
         }
