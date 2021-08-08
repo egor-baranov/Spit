@@ -450,7 +450,7 @@ MonoBehaviour:
   maxShootDistance: 200
   bulletPrefab: {fileID: 8638688114809136296, guid: 55f9c827186315c499ad0eeecd7c9ae2,
     type: 3}
-  runAwayDistance: 100
+  runAwayDistance: 30
 --- !u!54 &7618548787555989895
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -522,7 +522,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 2
-  radius: 8
+  radius: 12
   height: 12
   repathRate: 0.1
   canSearch: 1
