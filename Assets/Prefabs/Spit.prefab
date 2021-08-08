@@ -349,10 +349,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2fb35ebc50b40c1bb3eda7fda131e43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxTimeAlive: 2
+  maxTimeAlive: 3
   movementSpeed: 250
-  slowTimeScale: 0.25
-  slowmoTimeout: 1
+  startSlowmoScale: 0.5
+  startSlowmoTimeout: 3
+  beforeInvasionSlowmoScale: 0.5
+  beforeInvasionSlowmoTimeout: 3
+  afterInvasionSlowmoScale: 0.5
+  afterInvasionSlowmoTimeout: 3
   invasionRadius: 20
 --- !u!54 &7417916123268976603
 Rigidbody:
