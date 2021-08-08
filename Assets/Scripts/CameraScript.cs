@@ -89,6 +89,6 @@ public class CameraScript : MonoBehaviour {
         _distanceFromTarget = (transform.position - CameraHolder.position).normalized *
                               (cameraDistance / Mathf.Pow(zoomOutScale, 3));
         transform.LookAt(CameraHolder);
-        SetTarget(CameraHolder, 1);
+        SetTarget(CameraHolder, 3);
     }
 }
