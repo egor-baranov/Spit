@@ -56,7 +56,8 @@ namespace Controllers.Projectiles {
             Time.timeScale = startSlowmoScale;
             _timeManagementThread = GameThread.Create().Subscribe(
                 0.1F,
-                () => Time.timeScale = Mathf.Min(Time.timeScale + 0.1F / startSlowmoTimeout, 1));
+                () => Time.timeScale = Mathf.Min(Time.timeScale + 0.1F / startSlowmoTimeout, 1)
+            );
         }
 
         protected override void Update() {
@@ -87,7 +88,8 @@ namespace Controllers.Projectiles {
                 Time.timeScale = beforeInvasionSlowmoScale;
                 _timeManagementThread.Unsubscribe().Subscribe(
                     0.1F,
-                    () => Time.timeScale = Mathf.Min(Time.timeScale + 0.1F / beforeInvasionSlowmoTimeout, 1));
+                    () => Time.timeScale = Mathf.Min(Time.timeScale + 0.1F / beforeInvasionSlowmoTimeout, 1)
+                    );
             }
 
             if (Input.GetKeyDown(KeyCode.Mouse1)) {
