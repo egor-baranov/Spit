@@ -28,9 +28,10 @@ namespace Core {
                 UnityAction action,
                 int count,
                 float preDelay = 0F,
+                UnityAction endAction = null,
                 Func<bool> stopCondition = null) =>
                 StartCoroutine(
-                    DoMultipleTimesCoroutine(timeSeparator, action, count, preDelay)
+                    DoMultipleTimesCoroutine(timeSeparator, action, count, preDelay, endAction, stopCondition)
                 );
 
             private static IEnumerator DoWithDelayCoroutine(float time, UnityAction action,
@@ -45,7 +46,9 @@ namespace Core {
                 }
             }
 
-            private static IEnumerator DoEveryIntervalCoroutine(float timeInterval, UnityAction action,
+            private static IEnumerator DoEveryIntervalCoroutine(
+                float timeInterval,
+                UnityAction action,
                 Func<bool> stopCondition) {
                 while (stopCondition == null || !stopCondition()) {
                     yield return new WaitForSecondsRealtime(timeInterval);
@@ -59,8 +62,14 @@ namespace Core {
                 }
             }
 
-            private static IEnumerator DoMultipleTimesCoroutine(float timeSeparator,
-                UnityAction action, int repeatTimes, float preDelay, Func<bool> stopCondition = null) {
+            private static IEnumerator DoMultipleTimesCoroutine(
+                float timeInterval,
+                UnityAction action,
+                int repeatTimes,
+                float preDelay,
+                UnityAction endAction = null,
+                Func<bool> stopCondition = null
+            ) {
                 yield return new WaitForSecondsRealtime(preDelay);
                 foreach (var i in 0.Until(repeatTimes)) {
                     if (stopCondition != null && stopCondition.Invoke()) {
@@ -69,9 +78,11 @@ namespace Core {
 
                     action.Invoke();
                     if (i != repeatTimes - 1) {
-                        yield return new WaitForSecondsRealtime(timeSeparator);
+                        yield return new WaitForSecondsRealtime(timeInterval);
                     }
                 }
+
+                endAction?.Invoke();
             }
 
             private void OnDestroy() {
@@ -107,12 +118,21 @@ namespace Core {
         public static void ExecuteMultipleTimes(
             float timeInterval,
             UnityAction action,
-            int count,
+            int repeatTimes,
+            UnityAction endAction = null,
             float preDelay = 0F,
-            Func<bool> stopCondition = null) {
+            Func<bool> stopCondition = null
+        ) {
             Init();
             try {
-                _relatedMonoBehaviour.DoMultipleTimes(timeInterval, action, count, preDelay, stopCondition);
+                _relatedMonoBehaviour.DoMultipleTimes(
+                    timeInterval,
+                    action,
+                    repeatTimes,
+                    preDelay,
+                    endAction,
+                    stopCondition
+                );
             }
             catch (MissingReferenceException) {
                 Init();

@@ -15,9 +15,13 @@ namespace Util.Classes {
             return this;
         }
 
-        public GameThread Subscribe(float timeInterval, UnityAction action, int count, float preDelay = 0F) {
+        public GameThread Subscribe(float timeInterval, UnityAction action, int repeatTimes, float preDelay = 0F) {
             GlobalScope.ExecuteMultipleTimes(
-                timeInterval, action, count, preDelay, () => !_isAlive
+                timeInterval, 
+                action, 
+                repeatTimes, 
+                preDelay: preDelay, 
+                stopCondition: () => !_isAlive
             );
             return this;
         }
