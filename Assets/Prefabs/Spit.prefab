@@ -351,12 +351,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxTimeAlive: 3
   movementSpeed: 250
-  startSlowmoScale: 0.5
-  startSlowmoTimeout: 3
-  beforeInvasionSlowmoScale: 0.5
-  beforeInvasionSlowmoTimeout: 3
-  afterInvasionSlowmoScale: 0.5
-  afterInvasionSlowmoTimeout: 3
+  startSlowmoScale: 0.3
+  startSlowmoTimeout: 1
+  beforeInvasionSlowmoScale: 0.7
+  beforeInvasionSlowmoTimeout: 1
+  afterInvasionSlowmoScale: 0.1
+  afterInvasionSlowmoTimeout: 0.5
   invasionRadius: 20
 --- !u!54 &7417916123268976603
 Rigidbody:
